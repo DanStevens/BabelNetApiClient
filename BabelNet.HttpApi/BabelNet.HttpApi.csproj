@@ -12,6 +12,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="obj\BabelNet-1.0.0-swaggerClient.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <OpenApiReference Include="BabelNet-1.0.0-swagger.yaml" CodeGenerator="NSwagCSharp" Namespace="BabelNet.HttpApi" ClassName="BabelNetApiClient" />
   </ItemGroup>
 
