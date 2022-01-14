@@ -1,0 +1,502 @@
+openapi: 3.0.0
+servers:
+  - description: Main
+    url: https://babelnet.io/v6
+info:
+  description: |
+    This page describes how you can query BabelNet through an HTTP interface that returns JSON. You can append the `key` parameter to the HTTP requests as shown in the examples below. To obtain an API key please read the [key & limits](https://babelnet.org/guide#access) page. All requests must be executed using the GET method and they should include the `Accept-Encoding: gzip` header in order to obtain compressed content. 
+  version: "1.0.0"
+  title: BabelNet HTTP API
+  contact:
+    email: you@your-company.com
+  license:
+    name: "LICENSES: All the data of the external resources are released under the terms of the respective owners' licenses."
+    url: 'https://babelnet.org/licenses/'
+externalDocs:
+  description: BabelNet HTTP API Guide
+  url: https://babelnet.org/guide
+paths:
+  /getVersion:
+    get:
+      operationId: getVersion
+      description: Gets the current version of the BabelNet HTTP API
+      security:
+        - key: []
+      responses:
+        '200':
+          description: Object containing version number
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
+                    example: V5_0
+  /getSynsetIds:
+    get:
+      operationId: getSynsetIds
+      description: Retrieve the IDs of the Babel synsets (concepts) denoted by a given word
+      security:
+        - key: []
+      parameters:
+        - $ref: '#/components/parameters/lemma_R'
+        - $ref: '#/components/parameters/searchLang_RM'
+        - $ref: '#/components/parameters/targetLang_SL'
+        - $ref: '#/components/parameters/pos_M'
+        - $ref: '#/components/parameters/source_M'
+      responses:
+        '200':
+          description: search results matching criteria
+          content:
+            application/json;charset=UTF8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Synset'
+              example:
+                - id: bn:00289737n
+                  pos: NOUN
+                  source: BABELNET
+                - id: bn:26774334v
+                  pos: VERB
+                  source: BABELNET
+                - id: bn:26558969n
+                  pos: NOUN
+                  source: BABELNET
+                - id: bn:00005054n
+                  pos: NOUN
+                  source: BABELNET
+        '400':
+          $ref: '#/components/responses/WrongParameters'
+  /getSenses:
+    get:
+      operationId: getSenses
+      description: Retrieve the senses of a given word
+      security:
+        - key: []
+      parameters:
+        - $ref: '#/components/parameters/lemma_R'
+        - $ref: '#/components/parameters/searchLang_R'
+        - $ref: '#/components/parameters/targetLang_SL'
+        - $ref: '#/components/parameters/pos_M'
+        - $ref: '#/components/parameters/source_M'
+      responses:
+        '200':
+          description: Senses for the given word
+          content:
+            application/json;charset=UTF8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Sense'
+        '400':
+          $ref: '#/components/responses/WrongParameters'
+  /getSynsetIdsFromResourceID:
+    get:
+      operationId: getSynsetIdsFromResourceID
+      description: |
+        Retrieve a list of BabelNet IDs given a resource identifier
+
+        This method must be accessed differently according to the resource identifier that is being used. For resources that have a unique identifier for each item (e.g. Wikidata) the only required parameter is the id; this holds for all the resources except Wikipedia and Wikiquote, where a single page title is not unique across different languages: this is why when using a Wikipedia ID (i.e., page title) it is mandatory to include the search language and, optionally, the POS tag.
+      security:
+        - key: []
+      parameters:
+        - name: id
+          in: query
+          description: The id of the Synset you want to retrieve or the page title you want to search for
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/source_R'
+        - $ref: '#/components/parameters/searchLang_R'
+        - $ref: '#/components/parameters/targetLang_SL'
+        - $ref: '#/components/parameters/pos_M'
+        - name: wnVersion
+          in: query
+          description: If the value of the parameter source is `WN` (WordNet), using this field allow to specify the WordNet version of the parameter id. 
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Responds with an array of one Synset that matches the given `id` parameter or an empty array if not found.
+          content:
+            application/json;charset=UTF8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Synset'
+        '400':
+          $ref: '#/components/responses/WrongParameters'
+  /getOutgoingEdges:
+    get:
+      operationId: getOutgoingEdges
+      description: Retrieve edges of a given BabelNet synset
+      security:
+        - key: []
+      parameters:
+        - name: id
+          in: query
+          description: The id of the Synset
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Edge (SynsetRelation) objects associated with the Synset
+          content:
+            application/json;charset=UTF8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SynsetRelation'
+        '400':
+          $ref: '#/components/responses/WrongParameters'
+components:
+  headers:
+    Accept-Encoding:
+      description: Include the 'Accept-Encoding:' gzip header in order to obtain compressed content.
+      example: gzip
+      schema:
+        type: string
+    Content-Encoding:
+      description: Response content is compressed
+      schema:
+        type: string
+  parameters:
+    key:
+      name: key
+      in: query
+      description: API key
+      required: true
+      schema:
+        type: string
+    lemma_R: # Required version
+      name: lemma
+      in: query
+      description: The word to search for.
+      required: true
+      example: apple
+      schema:
+        type: string
+    searchLang: # Optional version
+      name: searchLang
+      in: query
+      description: The language of the word.
+      schema:
+         $ref: '#/components/schemas/Language'
+    searchLang_R: # Require version
+      name: searchLang
+      in: query
+      description: the language of the word.
+      required: true
+      schema:
+        $ref: '#/components/schemas/Language'
+    searchLang_RM: # Required, multi-value version
+      name: searchLang
+      in: query
+      description: The language of the word. Accepts multiple values. 
+      required: true
+      schema:
+       $ref: '#/components/schemas/LanguageList'
+    targetLang_SL: # Version that defaults to searchLang
+      name: targetLang
+      in: query
+      description: |
+        The languages in which the data are to be retrieved.
+
+        Default value is the search language and accepts not more than 3 languages except the search language. 
+      example: IT
+      schema:
+        $ref: '#/components/schemas/LanguageList'
+    targetLang_EN: # Version that defaults to English (EN)
+      name: targetLang
+      in: query
+      description: |
+        The languages in which the data are to be retrieved.
+
+        Default value is the English and accepts not more than 3 languages except the default language.
+      example: IT
+      schema:
+        $ref: '#/components/schemas/LanguageList'
+    pos_M:
+      name: pos
+      in: query
+      description: |
+        Returns only the synsets containing this part of speech (NOUN, VERB, etc). Accepts multiple values. 
+      example: NOUN
+      schema:
+        $ref: '#/components/schemas/UniversalPOS'
+    source_M:
+      name: source
+      in: query
+      description: Returns only the synsets containing these sources (WIKT, WIKIDATA, etc). Accepts multiple values. 
+      example: WIKT
+      schema:
+        $ref: '#/components/schemas/Source'
+    source_R:
+      name: source
+      in: query
+      description: Returns only the synsets containing these sources (WIKT, WIKIDATA, etc).
+      required: true
+      example: WIKT
+      schema:
+        $ref: '#/components/schemas/Source'
+  responses:
+    WrongParameters:
+      description: There is an error with one or more parameters in the request
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Wrong Parameters.
+    SynsetArray:
+      description: An array of Synset objects
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            type: array
+            items:
+                $ref: '#/components/schemas/Synset'
+  schemas:
+    Lemma:
+      description: A lemma is the headword in set of related words
+      properties:
+        lemma:
+          type: string
+          description: The lemma
+          example: Apple
+        type:
+          type: string
+          description: |
+            The type of the lemma, which can be of one of the following values:
+
+            - `AUTOMATIC_TRANSLATION`: Lemmas resulting from automatic translations (suggested use only for automatic text processing).
+            - `HIGH_QUALITY`: High quality lemmas, coming from professionally-curated resources (such as WordNet or WordAtlas) or reliable crowdsources resources.
+            - `POTENTIAL_NEAR_SYNONYM_OR_WORSE`: Mostly Wikipedia redirections, which might be synonyms, near synonyms or related terms.
+          example: HIGH_QUALITY
+          enum:
+            - AUTOMATIC_TRANSLATION
+            - HIGH_QUALITY
+            - POTENTIAL_NEAR_SYNONYM_OR_WORSE
+      required:
+        - lemma
+        - type
+    Language:
+      type: string
+      description: A language code. [Allowed values](https://babelnet.org/5.0/javadoc/it/uniroma1/lcl/jlt/util/Language.html)
+      example: EN
+    LanguageList:
+      type: array
+      description: A list of language codes
+      example: EN,DE,ES
+      items:
+        $ref: '#/components/schemas/Language'
+    Pointer:
+      type: object
+      description:  Models a semantic pointer in BabelNet. Includes an associative (i.e. semantically unspecified) relation.
+      properties:
+        fSymbol:
+          type: string
+          description: A symbol that is used to indicate this pointer type.
+          example: r
+        name:
+          type: string
+          description: User-friendly name of this pointer type
+          example: Semantically related form
+        shortName:
+          type: string
+          description: A short-form name of this pointer type
+          example: related
+        relationGroup:
+          type: string
+          example: OTHER
+          enum:
+            - HOLONYM
+            - HYPERNYM
+            - HYPONYM
+            - MERONYM
+            - OTHER
+        isAutomatic:
+          type: boolean
+          example: false
+          description: true if the relation is obtained from an automatic resource
+    Sense:
+      description: A sense in BabelNet, contained in a Synset.
+      type: object
+      properties:
+        fullLemma:
+          title: Full lemma
+          type: string
+          description: The full lemma for this sense
+          example: Apple_(name)
+        simpleLemma:
+          type: string
+          description: Simplified lemma, with qualifications in paranthesis removed
+          example: apple
+        lemma:
+          $ref: '#/components/schemas/Lemma'
+        source:
+          $ref: '#/components/schemas/Source'
+        senseKey:
+          type: string
+          description: the sensekey of the WordNet, Omega, Wikidata or Wiktionary sense to which this Sense corresponds, if any.
+          example: "38117537"
+        frequence:
+          type: integer
+          deprecated: true
+          description: Discontinued. Gets the frequency score for this Sense. This score represents, for a Wikipedia page/redirection, the number of its incoming links. Otherwise it is null.
+        language:
+          $ref: '#/components/schemas/Language'
+        pos:
+          type: string
+        translationInfo:
+          type: string
+          description: translation-related information. To be removed in future version.
+          deprecated: true
+        pronunciations:
+          type: object
+          properties:
+            audios:
+              type: array
+              items:
+                type: object
+            transcriptions:
+              type: array
+              items:
+                type: string
+        synsetID:
+          $ref: '#/components/schemas/Synset'
+        bKeySense:
+          title: Key sense
+          type: boolean
+          description: Returns true if it is a key sense
+        idSense:
+          type: integer
+          description: The numberic id of the sense
+          example: 102582750
+        tags:
+          type: object
+      required:
+        - fullLemma
+        - simpleLemma
+        - lemma
+        - source
+    Source:
+      type: string
+      description: Sources for the BabelNet senses. [Allowed values](https://babelnet.org/5.0/javadoc/it/uniroma1/lcl/babelnet/data/SenseSource.html)
+      example: BABELNET
+    Synset:
+      type: object
+      description: A set of one or more synonyms
+      properties:
+        id:
+          type: string
+          description: The ID of the Synset
+          example: bn:14289548n
+        pos:
+          $ref: '#/components/schemas/UniversalPOS'
+        source:
+          $ref: '#/components/schemas/Source'
+    SynsetRelation:
+      type: object
+      description: A class that models a relation to a Synset
+      properties:
+        language:
+          $ref: '#/components/schemas/Language'
+        pointer:
+          $ref: '#/components/schemas/Pointer'
+        target:
+          type: string
+          description: target id
+          example: bn:00021497n
+        weight:
+          type: number
+          format: double
+          description: The weight of the Relation. To be removed in future version.
+          deprecated: true
+        normalizedWeight:
+          type: number
+          format: double
+          description: the weight normalized across all relations of the same knowledge source. To be removed in future version.
+          deprecated: true
+    UniversalPOS:
+      type: string
+      description: A code representing a 'part of speech'. [Allowed values](https://babelnet.org/5.0/javadoc/it/uniroma1/lcl/jlt/util/UniversalPOS.html)
+      example: NOUN
+      enum:
+        - ADJ
+        - ADJ_ADP
+        - ADJ_PRON
+        - ADP
+        - ADP_ADJ
+        - ADP_ADP
+        - ADP_CCONJ
+        - ADP_DET
+        - ADP_NOUN
+        - ADP_NUM
+        - ADP_PART
+        - ADP_PRON
+        - ADP_PROPN
+        - ADP_X
+        - ADV
+        - ADV_PRON
+        - AUX
+        - AUX_PRON
+        - CCONJ
+        - CCONJ_ADJ
+        - CCONJ_ADP
+        - CCONJ_ADV
+        - CCONJ_AUX
+        - CCONJ_CCONJ
+        - CCONJ_DET
+        - CCONJ_INTJ
+        - CCONJ_NOUN
+        - CCONJ_NUM
+        - CCONJ_PART
+        - CCONJ_PRON
+        - CCONJ_PROPN
+        - CCONJ_VERB
+        - CCONJ_X
+        - DET
+        - INTJ
+        - NOUN
+        - NOUN_ADJ
+        - NOUN_NOUN
+        - NOUN_PRON
+        - NOUN_PUNCT
+        - NUM
+        - PART
+        - PART_ADJ
+        - PART_ADV
+        - PART_AUX
+        - PART_NOUN
+        - PART_PART
+        - PART_PRON
+        - PART_VERB
+        - PRON
+        - PRON_PRON
+        - PRON_VERB
+        - PROPN
+        - PROPN_DET
+        - PUNCT
+        - SCONJ
+        - SYM
+        - VERB
+        - VERB_ADP
+        - VERB_ADV
+        - VERB_NOUN
+        - VERB_PRON
+        - X
+        - X_NOUN
+        - X_PRON
+        - X_X
+  securitySchemes:
+    key:
+      type: apiKey
+      name: key
+      description: API key obtained after signing up to BabelNet (see [key & limits](https://babelnet.org/guide#HowdoIobtainaBabelNetAPIkey?)) 
+      in: query
