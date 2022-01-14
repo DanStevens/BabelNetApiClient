@@ -262,29 +262,6 @@ components:
             items:
                 $ref: '#/components/schemas/Synset'
   schemas:
-    Lemma:
-      description: A lemma is the headword in set of related words
-      properties:
-        lemma:
-          type: string
-          description: The lemma
-          example: Apple
-        type:
-          type: string
-          description: |
-            The type of the lemma, which can be of one of the following values:
-
-            - `AUTOMATIC_TRANSLATION`: Lemmas resulting from automatic translations (suggested use only for automatic text processing).
-            - `HIGH_QUALITY`: High quality lemmas, coming from professionally-curated resources (such as WordNet or WordAtlas) or reliable crowdsources resources.
-            - `POTENTIAL_NEAR_SYNONYM_OR_WORSE`: Mostly Wikipedia redirections, which might be synonyms, near synonyms or related terms.
-          example: HIGH_QUALITY
-          enum:
-            - AUTOMATIC_TRANSLATION
-            - HIGH_QUALITY
-            - POTENTIAL_NEAR_SYNONYM_OR_WORSE
-      required:
-        - lemma
-        - type
     Language:
       type: string
       description: A language code. [Allowed values](https://babelnet.org/5.0/javadoc/it/uniroma1/lcl/jlt/util/Language.html)
@@ -338,7 +315,7 @@ components:
           description: Simplified lemma, with qualifications in paranthesis removed
           example: apple
         lemma:
-          $ref: '#/components/schemas/Lemma'
+          type: object
         source:
           $ref: '#/components/schemas/Source'
         senseKey:

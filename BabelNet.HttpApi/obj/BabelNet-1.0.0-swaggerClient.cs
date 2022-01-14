@@ -613,38 +613,6 @@ namespace BabelNet.HttpApi
         }
     }
 
-    /// <summary>A lemma is the headword in set of related words</summary>
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v11.0.0.0)")]
-    public partial class Lemma 
-    {
-        /// <summary>The lemma</summary>
-        [Newtonsoft.Json.JsonProperty("lemma", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string Lemma1 { get; set; }
-    
-        /// <summary>The type of the lemma, which can be of one of the following values:
-        /// 
-        /// - `AUTOMATIC_TRANSLATION`: Lemmas resulting from automatic translations (suggested use only for automatic text processing).
-        /// - `HIGH_QUALITY`: High quality lemmas, coming from professionally-curated resources (such as WordNet or WordAtlas) or reliable crowdsources resources.
-        /// - `POTENTIAL_NEAR_SYNONYM_OR_WORSE`: Mostly Wikipedia redirections, which might be synonyms, near synonyms or related terms.
-        /// </summary>
-        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
-        public LemmaType Type { get; set; }
-    
-        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
-    
-        [Newtonsoft.Json.JsonExtensionData]
-        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
-        {
-            get { return _additionalProperties; }
-            set { _additionalProperties = value; }
-        }
-    
-    
-    }
-    
     /// <summary>A list of language codes</summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class LanguageList : System.Collections.ObjectModel.Collection<string>
@@ -703,7 +671,8 @@ namespace BabelNet.HttpApi
         public string SimpleLemma { get; set; }
     
         [Newtonsoft.Json.JsonProperty("lemma", Required = Newtonsoft.Json.Required.Always)]
-        public Lemma Lemma { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
+        public object Lemma { get; set; } = new object();
     
         [Newtonsoft.Json.JsonProperty("source", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
@@ -1054,20 +1023,6 @@ namespace BabelNet.HttpApi
             set { _additionalProperties = value; }
         }
     
-    
-    }
-    
-    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v11.0.0.0)")]
-    public enum LemmaType
-    {
-        [System.Runtime.Serialization.EnumMember(Value = @"AUTOMATIC_TRANSLATION")]
-        AUTOMATIC_TRANSLATION = 0,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"HIGH_QUALITY")]
-        HIGH_QUALITY = 1,
-    
-        [System.Runtime.Serialization.EnumMember(Value = @"POTENTIAL_NEAR_SYNONYM_OR_WORSE")]
-        POTENTIAL_NEAR_SYNONYM_OR_WORSE = 2,
     
     }
     
