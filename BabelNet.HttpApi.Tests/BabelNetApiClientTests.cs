@@ -10,14 +10,14 @@ public class BabelNetApiClientTests
 {
     private const string _apiKey = Secrets.ApiKey;
 
-    private HttpClient httpClient;
-    private BabelNetApiClient apiClient;
+    private HttpClient _httpClient;
+    private LoggingBabelNetApiClient _apiClient;
 
     [SetUp]
     public void Setup()
     {
-        httpClient = new HttpClient();
-        apiClient = new(httpClient, _apiKey)
+        _httpClient = new HttpClient();
+        _apiClient = new(_httpClient, _apiKey)
         {
             RequestLog = new List<HttpRequestMessage>(),
             ResponseLog = new List<HttpResponseMessage>(),
@@ -27,17 +27,17 @@ public class BabelNetApiClientTests
     [TearDown]
     public void TearDown()
     {
-        httpClient.Dispose();
+        _httpClient.Dispose();
     }
 
     [Test]
     public async Task GetVersion()
     {
-        var res = await apiClient.GetVersionAsync();
+        var res = await _apiClient.GetVersionAsync();
 
-        apiClient.RequestLog.Count.Should().Be(1);
-        apiClient.RequestLog[0].Method.Should().Be(HttpMethod.Get);
-        apiClient.RequestLog[0].RequestUri.Should().Be(
+        _apiClient.RequestLog.Count.Should().Be(1);
+        _apiClient.RequestLog[0].Method.Should().Be(HttpMethod.Get);
+        _apiClient.RequestLog[0].RequestUri.Should().Be(
             $"https://babelnet.io/v6/getVersion?key={_apiKey}");
 
         res.Should().NotBeNull();
@@ -49,11 +49,11 @@ public class BabelNetApiClientTests
     {
         const string lemma = "apple";
         const string searchLang = "EN";
-        var res = await apiClient.GetSynsetIdsAsync(lemma, searchLang);
+        var res = await _apiClient.GetSynsetIdsAsync(lemma, searchLang);
 
-        apiClient.RequestLog.Count.Should().Be(1);
-        apiClient.RequestLog[0].Method.Should().Be(HttpMethod.Get);
-        apiClient.RequestLog[0].RequestUri.Should().Be(
+        _apiClient.RequestLog.Count.Should().Be(1);
+        _apiClient.RequestLog[0].Method.Should().Be(HttpMethod.Get);
+        _apiClient.RequestLog[0].RequestUri.Should().Be(
             $"https://babelnet.io/v6/getSynsetIds?lemma={lemma}&searchLang={searchLang}&key={_apiKey}");
 
         Assert.IsNotNull(res);
@@ -64,11 +64,11 @@ public class BabelNetApiClientTests
     {
         const string lemma = "apple";
         var searchLangs = new[] { "EN", "DE", "ES" };
-        var res = await apiClient.GetSynsetIdsAsync(lemma, searchLangs);
+        var res = await _apiClient.GetSynsetIdsAsync(lemma, searchLangs);
 
-        apiClient.RequestLog.Count.Should().Be(1);
-        apiClient.RequestLog[0].Method.Should().Be(HttpMethod.Get);
-        apiClient.RequestLog[0].RequestUri.Should().Be(
+        _apiClient.RequestLog.Count.Should().Be(1);
+        _apiClient.RequestLog[0].Method.Should().Be(HttpMethod.Get);
+        _apiClient.RequestLog[0].RequestUri.Should().Be(
             $"https://babelnet.io/v6/getSynsetIds?lemma={lemma}&searchLang={string.Join("&searchLang=", searchLangs)}&key={_apiKey}");
 
         Assert.IsNotNull(res);
@@ -82,11 +82,11 @@ public class BabelNetApiClientTests
         const string targetLang = "DE";
         const UniversalPOS pos = UniversalPOS.NOUN;
         const string source = "BABELNET";
-        var res = await apiClient.GetSynsetIdsAsync(lemma, searchLang, targetLang, pos, "BABELNET");
+        var res = await _apiClient.GetSynsetIdsAsync(lemma, searchLang, targetLang, pos, "BABELNET");
 
-        apiClient.RequestLog.Count.Should().Be(1);
-        apiClient.RequestLog[0].Method.Should().Be(HttpMethod.Get);
-        apiClient.RequestLog[0].RequestUri.Should().Be(
+        _apiClient.RequestLog.Count.Should().Be(1);
+        _apiClient.RequestLog[0].Method.Should().Be(HttpMethod.Get);
+        _apiClient.RequestLog[0].RequestUri.Should().Be(
             $"https://babelnet.io/v6/getSynsetIds?lemma={lemma}&searchLang={searchLang}&targetLang={targetLang}&pos={pos}&source={source}&key={_apiKey}");
 
         Assert.IsNotNull(res);

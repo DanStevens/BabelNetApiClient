@@ -13,15 +13,6 @@ public partial class BabelNetApiClient
         _apiKey = apiKey;
     }
 
-    /// <summary>
-    /// Optionally set to a list in order to log request messages
-    /// </summary>
-    public IList<HttpRequestMessage> RequestLog { get; set; }
-
-    /// <summary>
-    /// Optionally set to a list in order to log response messages
-    /// </summary>
-    public IList<HttpResponseMessage> ResponseLog { get; set; }
 
     partial void PrepareRequest(HttpClient client, HttpRequestMessage request, string url)
     {
@@ -32,10 +23,7 @@ public partial class BabelNetApiClient
             request.RequestUri = new Uri(uri.ToString() + GetKeyQueryParameter(uri));
         }
 
-        if (RequestLog != null)
-        {
-            RequestLog.Add(request);
-        }
+        OnRequesting(client, request, url);
 
         string GetKeyQueryParameter(Uri uri)
         {
@@ -45,10 +33,7 @@ public partial class BabelNetApiClient
 
     partial void ProcessResponse(HttpClient client, HttpResponseMessage response)
     {
-        if (ResponseLog != null)
-        {
-            ResponseLog.Add(response);
-        }
+        OnResponse(client, response);
     }
 
     public Task<ICollection<Synset>> GetSynsetIdsAsync(string lemma, string searchLang)
@@ -85,4 +70,10 @@ public partial class BabelNetApiClient
             pos,
             source);
     }
+
+    protected virtual void OnRequesting(HttpClient client, HttpRequestMessage request, string url)
+    { }
+
+    protected virtual void OnResponse(HttpClient client, HttpResponseMessage response)
+    { }
 }
