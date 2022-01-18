@@ -19,8 +19,8 @@ public partial class BabelNetApiClient
         if (!string.IsNullOrWhiteSpace(_apiKey))
         {
             // Append `key` query parameter to each request with _apiKey
-            Uri uri = new Uri(url);
-            request.RequestUri = new Uri(uri.ToString() + GetKeyQueryParameter(uri));
+            url = url + GetKeyQueryParameter(new Uri(url));
+            request.RequestUri = new Uri(url);
         }
 
         OnRequesting(client, request, url);
