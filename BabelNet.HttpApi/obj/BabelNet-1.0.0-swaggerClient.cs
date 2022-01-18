@@ -119,7 +119,7 @@ namespace BabelNet.HttpApi
         /// <param name="source">Returns only the synsets containing these sources (WIKT, WIKIDATA, etc). Accepts multiple values.</param>
         /// <returns>search results matching criteria</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Synset>> GetSynsetIdsAsync(string lemma, System.Collections.Generic.IEnumerable<string> searchLang, System.Collections.Generic.IEnumerable<string> targetLang, UniversalPOS? pos, string source)
+        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<SynsetId>> GetSynsetIdsAsync(string lemma, System.Collections.Generic.IEnumerable<string> searchLang, System.Collections.Generic.IEnumerable<string> targetLang, UniversalPOS? pos, string source)
         {
             return GetSynsetIdsAsync(lemma, searchLang, targetLang, pos, source, System.Threading.CancellationToken.None);
         }
@@ -134,7 +134,7 @@ namespace BabelNet.HttpApi
         /// <param name="source">Returns only the synsets containing these sources (WIKT, WIKIDATA, etc). Accepts multiple values.</param>
         /// <returns>search results matching criteria</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Synset>> GetSynsetIdsAsync(string lemma, System.Collections.Generic.IEnumerable<string> searchLang, System.Collections.Generic.IEnumerable<string> targetLang, UniversalPOS? pos, string source, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<SynsetId>> GetSynsetIdsAsync(string lemma, System.Collections.Generic.IEnumerable<string> searchLang, System.Collections.Generic.IEnumerable<string> targetLang, UniversalPOS? pos, string source, System.Threading.CancellationToken cancellationToken)
         {
             if (lemma == null)
                 throw new System.ArgumentNullException("lemma");
@@ -188,7 +188,7 @@ namespace BabelNet.HttpApi
                         var status_ = ((int)response_.StatusCode).ToString();
                         if (status_ == "200") 
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<Synset>>(response_, headers_).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<SynsetId>>(response_, headers_).ConfigureAwait(false);
                             return objectResponse_.Object;
                         }
                         else
@@ -204,7 +204,97 @@ namespace BabelNet.HttpApi
                             throw new ApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
             
-                        return default(System.Collections.Generic.ICollection<Synset>);
+                        return default(System.Collections.Generic.ICollection<SynsetId>);
+                    }
+                    finally
+                    {
+                        if (response_ != null)
+                            response_.Dispose();
+                    }
+                }
+            }
+            finally
+            {
+            }
+        }
+    
+        /// <param name="id">The id of the Synset you want to retrieve or the page title you want to search for</param>
+        /// <param name="targetLang">The languages in which the data are to be retrieved.
+        /// 
+        /// Default value is the English and accepts not more than 3 languages except the default language.</param>
+        /// <returns>Senses for the given word</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Sense>> GetSynsetAsync(string id, System.Collections.Generic.IEnumerable<string> targetLang)
+        {
+            return GetSynsetAsync(id, targetLang, System.Threading.CancellationToken.None);
+        }
+    
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <param name="id">The id of the Synset you want to retrieve or the page title you want to search for</param>
+        /// <param name="targetLang">The languages in which the data are to be retrieved.
+        /// 
+        /// Default value is the English and accepts not more than 3 languages except the default language.</param>
+        /// <returns>Senses for the given word</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Sense>> GetSynsetAsync(string id, System.Collections.Generic.IEnumerable<string> targetLang, System.Threading.CancellationToken cancellationToken)
+        {
+            if (id == null)
+                throw new System.ArgumentNullException("id");
+    
+            var urlBuilder_ = new System.Text.StringBuilder();
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/getSynset?");
+            urlBuilder_.Append(System.Uri.EscapeDataString("id") + "=").Append(System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            if (targetLang != null) 
+            {
+                foreach (var item_ in targetLang) { urlBuilder_.Append(System.Uri.EscapeDataString("targetLang") + "=").Append(System.Uri.EscapeDataString(ConvertToString(item_, System.Globalization.CultureInfo.InvariantCulture))).Append("&"); }
+            }
+            urlBuilder_.Length--;
+    
+            var client_ = _httpClient;
+            try
+            {
+                using (var request_ = new System.Net.Http.HttpRequestMessage())
+                {
+                    request_.Method = new System.Net.Http.HttpMethod("GET");
+                    request_.Headers.Accept.Add(System.Net.Http.Headers.MediaTypeWithQualityHeaderValue.Parse("application/json;charset=UTF8"));
+    
+                    PrepareRequest(client_, request_, urlBuilder_);
+                    var url_ = urlBuilder_.ToString();
+                    request_.RequestUri = new System.Uri(url_, System.UriKind.RelativeOrAbsolute);
+                    PrepareRequest(client_, request_, url_);
+    
+                    var response_ = await client_.SendAsync(request_, System.Net.Http.HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false);
+                    try
+                    {
+                        var headers_ = System.Linq.Enumerable.ToDictionary(response_.Headers, h_ => h_.Key, h_ => h_.Value);
+                        if (response_.Content != null && response_.Content.Headers != null)
+                        {
+                            foreach (var item_ in response_.Content.Headers)
+                                headers_[item_.Key] = item_.Value;
+                        }
+    
+                        ProcessResponse(client_, response_);
+    
+                        var status_ = ((int)response_.StatusCode).ToString();
+                        if (status_ == "200") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<Sense>>(response_, headers_).ConfigureAwait(false);
+                            return objectResponse_.Object;
+                        }
+                        else
+                        if (status_ == "400") 
+                        {
+                            var objectResponse_ = await ReadObjectResponseAsync<Response2>(response_, headers_).ConfigureAwait(false);
+                            throw new ApiException<Response2>("There is an error with one or more parameters in the request", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                        }
+                        else
+                        if (status_ != "200" && status_ != "204")
+                        {
+                            var responseData_ = response_.Content == null ? null : await response_.Content.ReadAsStringAsync().ConfigureAwait(false); 
+                            throw new ApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
+                        }
+            
+                        return default(System.Collections.Generic.ICollection<Sense>);
                     }
                     finally
                     {
@@ -613,6 +703,83 @@ namespace BabelNet.HttpApi
         }
     }
 
+    /// <summary>A short description of the meaning of a word</summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class Gloss 
+    {
+        [Newtonsoft.Json.JsonProperty("source", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Source { get; set; }
+    
+        /// <summary>The WordNet or Wikipedia sense from which this gloss is taken</summary>
+        [Newtonsoft.Json.JsonProperty("sourceSense", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int SourceSense { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("language", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Language { get; set; }
+    
+        /// <summary>The Gloss text</summary>
+        [Newtonsoft.Json.JsonProperty("gloss", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Gloss1 { get; set; }
+    
+        /// <summary>A list of TokenIds. Each TokenId is the association between the lemma that appears in this Gloss, and the SynsetId that identifies the lemma in BabelNet.</summary>
+        [Newtonsoft.Json.JsonProperty("tokens", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<Token> Tokens { get; set; }
+    
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+    
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+    
+    
+    }
+    
+    /// <summary>Metadata related to a web-hosted image file.</summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class Image 
+    {
+        /// <summary>The MediaWiki page name for this image.</summary>
+        [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Name { get; set; }
+    
+        /// <summary>The languages for this image.</summary>
+        [Newtonsoft.Json.JsonProperty("languages", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<string> Languages { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("urlSource", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string UrlSource { get; set; }
+    
+        /// <summary>The license for the Image.</summary>
+        [Newtonsoft.Json.JsonProperty("license", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string License { get; set; }
+    
+        /// <summary>Gets the URL for the thumbnail image of this Image</summary>
+        [Newtonsoft.Json.JsonProperty("thumbUrl", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string ThumbUrl { get; set; }
+    
+        /// <summary>Gets the URL to the full-size image</summary>
+        [Newtonsoft.Json.JsonProperty("url", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Url { get; set; }
+    
+        /// <summary>True if the image is bad to censored</summary>
+        [Newtonsoft.Json.JsonProperty("badImage", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool BadImage { get; set; }
+    
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+    
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+    
+    
+    }
+    
     /// <summary>A list of language codes</summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class LanguageList : System.Collections.ObjectModel.Collection<string>
@@ -729,7 +896,71 @@ namespace BabelNet.HttpApi
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class Synset 
     {
-        /// <summary>The ID of the Synset</summary>
+        /// <summary>Sense objects associated with the Synset</summary>
+        [Newtonsoft.Json.JsonProperty("senses", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<Sense> Senses { get; set; }
+    
+        /// <summary>WordNet offsets corresponding to this Synset</summary>
+        [Newtonsoft.Json.JsonProperty("wnOffsets", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<SynsetId> WnOffsets { get; set; }
+    
+        /// <summary>Glosses associated with this Synset</summary>
+        [Newtonsoft.Json.JsonProperty("glosses", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<Gloss> Glosses { get; set; }
+    
+        /// <summary>A list of usage examples for this Synset</summary>
+        [Newtonsoft.Json.JsonProperty("examples", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<object> Examples { get; set; }
+    
+        /// <summary>A list of images associated with this Synset</summary>
+        [Newtonsoft.Json.JsonProperty("images", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<Image> Images { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("synsetType", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public SynsetType SynsetType { get; set; }
+    
+        /// <summary>A list of Wikipedia categories for this Synset</summary>
+        [Newtonsoft.Json.JsonProperty("categories", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<WikipediaCategory> Categories { get; set; }
+    
+        /// <summary>Translations between senses found in this BabelSynset.</summary>
+        [Newtonsoft.Json.JsonProperty("translations", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public object Translations { get; set; }
+    
+        /// <summary>A map of Domains to the importance of this Synset.</summary>
+        [Newtonsoft.Json.JsonProperty("domains", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public object Domains { get; set; }
+    
+        /// <summary>The set of languages used in this Synset.</summary>
+        [Newtonsoft.Json.JsonProperty("filterLangs", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<string> FilterLangs { get; set; }
+    
+        /// <summary>A list of tags associated with the Synset.</summary>
+        [Newtonsoft.Json.JsonProperty("tags", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public System.Collections.Generic.ICollection<object> Tags { get; set; }
+    
+        /// <summary>True if the Synset is a key concept.</summary>
+        [Newtonsoft.Json.JsonProperty("bKeyConcepts", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public bool BKeyConcepts { get; set; }
+    
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+    
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+    
+    
+    }
+    
+    /// <summary>An object that identifies a Synset</summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class SynsetId 
+    {
+        /// <summary>The ID code of the Synset. `bn:` prefix represents a BabelNet synset. `wn:` prefix represents a WordNet synset.</summary>
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Id { get; set; }
     
@@ -773,6 +1004,56 @@ namespace BabelNet.HttpApi
         /// <summary>the weight normalized across all relations of the same knowledge source. To be removed in future version.</summary>
         [Newtonsoft.Json.JsonProperty("normalizedWeight", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public double NormalizedWeight { get; set; }
+    
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+    
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+    
+    
+    }
+    
+    /// <summary>A kind of Synset, which can be one of the following:
+    ///   - "CONCEPT": an abstraction or generalization from experience
+    ///   - "NAMED_ENTITY": a word that clearly identifies one item
+    ///   - "Unknown": a word that does not fit the other types
+    /// </summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v11.0.0.0)")]
+    public enum SynsetType
+    {
+        [System.Runtime.Serialization.EnumMember(Value = @"CONCEPT")]
+        CONCEPT = 0,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"NAMED_ENTITY")]
+        NAMED_ENTITY = 1,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"UNKNOWN")]
+        UNKNOWN = 2,
+    
+    }
+    
+    /// <summary>Represents the association between the word that appears in a Gloss and the SynsetId that identifies the lemma in BabelNet.</summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class Token 
+    {
+        /// <summary>The start index of the Token</summary>
+        [Newtonsoft.Json.JsonProperty("start", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int Start { get; set; }
+    
+        /// <summary>The end index of the Token</summary>
+        [Newtonsoft.Json.JsonProperty("end", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int End { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public SynsetId Id { get; set; }
+    
+        /// <summary>The word of this Token</summary>
+        [Newtonsoft.Json.JsonProperty("word", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Word { get; set; }
     
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
     
@@ -987,6 +1268,30 @@ namespace BabelNet.HttpApi
     
         [System.Runtime.Serialization.EnumMember(Value = @"X_X")]
         X_X = 65,
+    
+    }
+    
+    /// <summary>Represents a Wikipedia category</summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class WikipediaCategory 
+    {
+        /// <summary>The name of the Wikipedia category</summary>
+        [Newtonsoft.Json.JsonProperty("category", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Category { get; set; }
+    
+        /// <summary>The language of the Wikipedia category</summary>
+        [Newtonsoft.Json.JsonProperty("language", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Language { get; set; }
+    
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+    
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+    
     
     }
     

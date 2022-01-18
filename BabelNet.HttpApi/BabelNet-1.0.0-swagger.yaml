@@ -53,7 +53,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Synset'
+                  $ref: '#/components/schemas/SynsetId'
               example:
                 - id: bn:00289737n
                   pos: NOUN
@@ -67,6 +67,32 @@ paths:
                 - id: bn:00005054n
                   pos: NOUN
                   source: BABELNET
+        '400':
+          $ref: '#/components/responses/WrongParameters'
+  /getSynset:
+    get:
+      operationId: getSynset
+      description: Retrieve the information of a given Synset
+      security:
+        - key: []
+      parameters:
+        - name: id
+          in: query
+          description: The id of the Synset you want to retrieve or the page title you want to search for
+          required: true
+          schema:
+            type: string
+          example: bn:14792761n
+        - $ref: '#/components/parameters/targetLang_EN'
+      responses:
+        '200':
+          description: Senses for the given word
+          content:
+            application/json;charset=UTF8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Sense'
         '400':
           $ref: '#/components/responses/WrongParameters'
   /getSenses:
@@ -131,7 +157,7 @@ paths:
   /getOutgoingEdges:
     get:
       operationId: getOutgoingEdges
-      description: Retrieve edges of a given BabelNet synset
+      description: Retrieve edges, hypernyms, hyponyms and antonyms of a given BabelNet synset
       security:
         - key: []
       parameters:
@@ -141,6 +167,7 @@ paths:
           required: true
           schema:
             type: string
+          example: bn:03083790n
       responses:
         '200':
           description: Edge (SynsetRelation) objects associated with the Synset
@@ -262,6 +289,70 @@ components:
             items:
                 $ref: '#/components/schemas/Synset'
   schemas:
+    Gloss:
+      type: object
+      description: A short description of the meaning of a word
+      properties:
+        source:
+          $ref: '#/components/schemas/Source'
+        sourceSense:
+          type: integer
+          description: The WordNet or Wikipedia sense from which this gloss is taken
+          example: 123090446
+        language:
+          $ref: '#/components/schemas/Language'
+        gloss:
+          type: string
+          description: The Gloss text
+          example: Apple-designed processors, marketed for the Macintosh as Apple Silicon, are system on a chip and system in a package processors designed by Apple Inc., mainly using the ARM architecture.
+        tokens:
+          type: array
+          description: A list of TokenIds. Each TokenId is the association between the lemma that appears in this Gloss, and the SynsetId that identifies the lemma in BabelNet.
+          items:
+            $ref: '#/components/schemas/Token'
+    Image:
+      type: object
+      description: Metadata related to a web-hosted image file.
+      properties:
+        name:
+          type: string
+          description: The MediaWiki page name for this image.
+          example: Apple_A4_Chip.jpg#WIKI
+        languages:
+          type: array
+          description: The languages for this image.
+          items:
+            $ref: '#/components/schemas/Language'
+          example:
+            - "NL"
+            - "VI"
+            - "FR"
+            - "ES"
+            - "DE"
+            - "HU"
+            - "FA"
+            - "EN"
+            - "KO"
+            - "IT"
+            - "RU"
+        urlSource:
+          $ref: '#/components/schemas/Source'
+        license:
+          type: string
+          description: The license for the Image.
+          example: CC_BY_SA_30
+        thumbUrl:
+          type: string
+          description: Gets the URL for the thumbnail image of this Image
+          example: https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Apple_A4_Chip.jpg/200px-Apple_A4_Chip.jpg
+        url:
+          type: string
+          description: Gets the URL to the full-size image
+          example: https://upload.wikimedia.org/wikipedia/commons/1/17/Apple_A4_Chip.jpg
+        badImage:
+          type: boolean
+          description: True if the image is bad to censored
+          example: false
     Language:
       type: string
       description: A language code. [Allowed values](https://babelnet.org/5.0/javadoc/it/uniroma1/lcl/jlt/util/Language.html)
@@ -370,9 +461,67 @@ components:
       type: object
       description: A set of one or more synonyms
       properties:
+        senses:
+          type: array
+          description: Sense objects associated with the Synset
+          items:
+            $ref: '#/components/schemas/Sense'
+        wnOffsets:
+          type: array
+          description: WordNet offsets corresponding to this Synset
+          items:
+            $ref: '#/components/schemas/SynsetId'
+        glosses:
+          type: array
+          description: Glosses associated with this Synset
+          items:
+            $ref: '#/components/schemas/Gloss'
+        examples:
+          type: array
+          description: A list of usage examples for this Synset
+          items: # TODO
+            type: object
+        images:
+          type: array
+          description: A list of images associated with this Synset
+          items:
+            $ref: '#/components/schemas/Image'
+        synsetType:
+          $ref: '#/components/schemas/SynsetType'
+        categories:
+          type: array
+          description: A list of Wikipedia categories for this Synset
+          items:
+            $ref: '#/components/schemas/WikipediaCategory'
+        translations:
+          type: object # TODO
+          description: Translations between senses found in this BabelSynset.
+        domains:
+          type: object
+          description: A map of Domains to the importance of this Synset.
+          example:
+            COMPUTING:
+              0.40721815824508667
+        filterLangs:
+          type: array
+          description: The set of languages used in this Synset.
+          items:
+            $ref: '#/components/schemas/Language'
+        tags:
+          type: array
+          description: A list of tags associated with the Synset.
+          items:
+            type: object # TODO
+        bKeyConcepts:
+          type: boolean
+          description: True if the Synset is a key concept.
+    SynsetId:
+      type: object
+      description: An object that identifies a Synset
+      properties:
         id:
           type: string
-          description: The ID of the Synset
+          description: The ID code of the Synset. `bn:` prefix represents a BabelNet synset. `wn:` prefix represents a WordNet synset.
           example: bn:14289548n
         pos:
           $ref: '#/components/schemas/UniversalPOS'
@@ -400,6 +549,37 @@ components:
           format: double
           description: the weight normalized across all relations of the same knowledge source. To be removed in future version.
           deprecated: true
+    SynsetType:
+      type: string
+      description: |
+        A kind of Synset, which can be one of the following:
+          - "CONCEPT": an abstraction or generalization from experience
+          - "NAMED_ENTITY": a word that clearly identifies one item
+          - "Unknown": a word that does not fit the other types
+      example: CONCEPT
+      enum:
+        - CONCEPT
+        - NAMED_ENTITY
+        - UNKNOWN
+    Token:
+      type: object
+      description: Represents the association between the word that appears in a Gloss and the SynsetId that identifies the lemma in BabelNet.
+      properties:
+        start:
+          type: integer
+          description: The start index of the Token
+          example: 76
+        end:
+          type: integer
+          description: The end index of the Token
+          example: 91
+        id:
+          type: object
+          $ref: '#/components/schemas/SynsetId'
+        word:
+          type: string
+          description: The word of this Token
+          example: "system on a chip"
     UniversalPOS:
       type: string
       description: A code representing a 'part of speech'. [Allowed values](https://babelnet.org/5.0/javadoc/it/uniroma1/lcl/jlt/util/UniversalPOS.html)
@@ -471,6 +651,18 @@ components:
         - X_NOUN
         - X_PRON
         - X_X
+    WikipediaCategory:
+      type: object
+      description: Represents a Wikipedia category
+      properties:
+        category:
+          type: string
+          description: The name of the Wikipedia category
+          example: ARM_architecture
+        language:
+          type: string
+          description: The language of the Wikipedia category
+          example: EN
   securitySchemes:
     key:
       type: apiKey

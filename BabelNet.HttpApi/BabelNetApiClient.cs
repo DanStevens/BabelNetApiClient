@@ -36,7 +36,7 @@ public partial class BabelNetApiClient
         OnResponse(client, response);
     }
 
-    public Task<ICollection<Synset>> GetSynsetIdsAsync(string lemma, string searchLang)
+    public Task<ICollection<SynsetId>> GetSynsetIdsAsync(string lemma, string searchLang)
     {
         return GetSynsetIdsAsync(
             lemma,
@@ -46,7 +46,7 @@ public partial class BabelNetApiClient
             null);
     }
 
-    public Task<ICollection<Synset>> GetSynsetIdsAsync(string lemma, IEnumerable<string> searchLangs)
+    public Task<ICollection<SynsetId>> GetSynsetIdsAsync(string lemma, IEnumerable<string> searchLangs)
     {
         return GetSynsetIdsAsync(
             lemma,
@@ -56,7 +56,7 @@ public partial class BabelNetApiClient
             null);
     }
 
-    public Task<ICollection<Synset>> GetSynsetIdsAsync(
+    public Task<ICollection<SynsetId>> GetSynsetIdsAsync(
         string lemma,
         string searchLang,
         string? targetLang = null,
