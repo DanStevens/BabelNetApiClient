@@ -574,7 +574,6 @@ components:
           description: The end index of the Token
           example: 91
         id:
-          type: object
           $ref: '#/components/schemas/SynsetId'
         word:
           type: string
