@@ -81,7 +81,7 @@ public class BabelNetApiClientTests
     }
 
     [Test]
-    public async Task GetSyncSetIds_WithArgs_lemma_searchLang_targetLang_pos_source()
+    public async Task GetSynsetIds_WithArgs_lemma_searchLang_targetLang_pos_source()
     {
         const string lemma = "apple";
         const string searchLang = "EN";
@@ -99,7 +99,7 @@ public class BabelNetApiClientTests
     }
 
     [Test]
-    public async Task GetSyncSetIds_WithArgs_lemma_searchLangs_targetLangs_pos_source()
+    public async Task GetSynsetIds_WithArgs_lemma_searchLangs_targetLangs_pos_source()
     {
         const string lemma = "apple";
         var searchLangs = new[] { "EN", "DE", "ES" };
@@ -117,7 +117,7 @@ public class BabelNetApiClientTests
     }
 
     [Test]
-    public void GetSyncSetIds_WithArgs_lemma_emptySearchLangs_emptyTargetLangs()
+    public void GetSynsetIds_WithArgs_lemma_emptySearchLangs_emptyTargetLangs()
     {
         const string lemma = "apple";
 
