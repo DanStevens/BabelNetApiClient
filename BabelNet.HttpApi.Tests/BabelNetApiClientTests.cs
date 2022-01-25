@@ -93,8 +93,8 @@ public class BabelNetApiClientTests
         const string searchLang = "EN";
         const string targetLang = "DE";
         const UniversalPOS pos = UniversalPOS.NOUN;
-        const string source = "BABELNET";
-        var res = await _apiClient.GetSynsetIdsAsync(lemma, searchLang, targetLang, pos, "BABELNET");
+        const string source = "WIKI";
+        var res = await _apiClient.GetSynsetIdsAsync(lemma, searchLang, targetLang, pos, source);
 
         ApiClientRequestHistory.Count.Should().Be(1);
         ApiClientRequestHistory[0].Method.Should().Be(HttpMethod.Get);
@@ -111,8 +111,8 @@ public class BabelNetApiClientTests
         var searchLangs = new[] { "EN", "DE", "ES" };
         var targetLangs = new[] { "FR", "IT" };
         const UniversalPOS pos = UniversalPOS.NOUN;
-        const string source = "BABELNET";
-        var res = await _apiClient.GetSynsetIdsAsync(lemma, searchLangs, targetLangs, pos, "BABELNET");
+        const string source = "WIKI";
+        var res = await _apiClient.GetSynsetIdsAsync(lemma, searchLangs, targetLangs, pos, source);
 
         ApiClientRequestHistory.Count.Should().Be(1);
         ApiClientRequestHistory[0].Method.Should().Be(HttpMethod.Get);
@@ -179,5 +179,23 @@ public class BabelNetApiClientTests
             wordNetSense.Properties.Should().BeOfType<WordNetSense>();
             wordNetSense.As<ISense>().Type.Should().Be(SenseType.WordNetSense);
         }
+    }
+
+    [Test]
+    public async Task GetSenses_WithArgs_lemma_searchLang_targetLang_pos_source()
+    {
+        const string lemma = "apple";
+        const string searchLang = "EN";
+        const string targetLang = "DE";
+        const UniversalPOS pos = UniversalPOS.NOUN;
+        const string source = "WIKI";
+        var res = await _apiClient.GetSensesAsync(lemma, searchLang, targetLang, pos, source);
+
+        ApiClientRequestHistory.Count.Should().Be(1);
+        ApiClientRequestHistory[0].Method.Should().Be(HttpMethod.Get);
+        ApiClientRequestHistory[0].RequestUri.Should().Be(
+            $"https://babelnet.io/v6/getSenses?lemma={lemma}&searchLang={searchLang}&targetLang={targetLang}&pos={pos}&source={source}&key={_apiKey}");
+
+        Assert.IsNotNull(res);
     }
 }

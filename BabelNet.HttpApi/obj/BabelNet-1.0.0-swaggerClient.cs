@@ -924,6 +924,8 @@ namespace BabelNet.HttpApi
             get { return _additionalProperties; }
             set { _additionalProperties = value; }
         }
+    
+    
     }
     
     /// <summary>A subtype of SenseCore for senses in WordNet</summary>

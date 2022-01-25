@@ -76,7 +76,7 @@ namespace BabelNet.HttpApi
         public Task<ICollection<SynsetId>> GetSynsetIdsAsync(
             string lemma,
             string searchLang,
-            string? targetLang = null,
+            string targetLang,
             UniversalPOS? pos = null,
             string? source = null)
         {
@@ -90,7 +90,22 @@ namespace BabelNet.HttpApi
 
         public async Task<ICollection<ISense>> GetSensesAsync(string lemma, string searchLang)
         {
-            return (await GetSensesAsync(lemma, searchLang, null, null, null)).Cast<ISense>().ToList();
+            return (await GetSensesAsync(lemma, searchLang, Enumerable.Empty<string>(), null, null)).Cast<ISense>().ToList();
+        }
+
+        public async Task<ICollection<ISense>> GetSensesAsync(
+            string lemma,
+            string searchLang,
+            string targetLang,
+            UniversalPOS? pos = null,
+            string? source = null)
+        {
+            return (await GetSensesAsync(
+                lemma,
+                searchLang,
+                new[] { targetLang },
+                pos,
+                source)).Cast<ISense>().ToList();
         }
 
         protected virtual void OnRequesting(HttpClient client, HttpRequestMessage request, string url)

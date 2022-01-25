@@ -485,8 +485,8 @@ components:
           description: The synset position of the Sense in WordNet
     Source:
       type: string
-      description: Sources for the BabelNet senses. [Allowed values](https://babelnet.org/5.0/javadoc/it/uniroma1/lcl/babelnet/data/SenseSource.html)
-      example: BABELNET
+      description: Sources for the BabelNet senses. [Allowed values](https://babelnet.org/5.0/javadoc/it/uniroma1/lcl/babelnet/data/BabelSenseSource.html)
+      example: WIKI
     Synset:
       type: object
       description: A set of one or more synonyms

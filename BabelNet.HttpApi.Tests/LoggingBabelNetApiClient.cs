@@ -36,7 +36,7 @@ namespace BabelNet.HttpApi.Tests
         protected override void OnResponse(HttpClient client, HttpResponseMessage response)
         {
             ResponseHistory?.Add(response);
-            Log?.WriteLine("Received {0} response of length {1} and type '{2}'", response.StatusCode, response.Content.Headers.ContentLength, response.Content.Headers.ContentType);
+            Log?.WriteLine("Received {0} response of length {1} and type '{2}'", response.StatusCode, response.Content.Headers?.ContentLength?.ToString() ?? "?", response.Content.Headers?.ContentType?.ToString() ?? "?");
         }
     }
 }
