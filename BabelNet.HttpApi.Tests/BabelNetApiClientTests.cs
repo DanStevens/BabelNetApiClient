@@ -130,4 +130,32 @@ public class BabelNetApiClientTests
         _apiClient.RequestHistory[0].RequestUri.Should().Be(
             $"https://babelnet.io/v6/getSynsetIds?lemma={lemma}&key={_apiKey}");
     }
+
+    [Test]
+    public async Task GetSynset()
+    {
+        const string id = "bn:14792761n";
+        const string targetLang = "EN";
+        var res = await _apiClient.GetSynsetAsync(id, new string[] { targetLang });
+
+        _apiClient.RequestHistory.Count.Should().Be(1);
+        _apiClient.RequestHistory[0].Method.Should().Be(HttpMethod.Get);
+        _apiClient.RequestHistory[0].RequestUri.Should().Be(
+            $"https://babelnet.io/v6/getSynset?id={id}&targetLang={targetLang}&key={_apiKey}");
+    }
+
+    [Test]
+    public async Task GetSenses_WithArgs_lemma_searchLang()
+    {
+        const string lemma = "apple";
+        const string searchLang = "EN";
+        var res = await _apiClient.GetSensesAsync(lemma, searchLang);
+
+        _apiClient.RequestHistory.Count.Should().Be(1);
+        _apiClient.RequestHistory[0].Method.Should().Be(HttpMethod.Get);
+        _apiClient.RequestHistory[0].RequestUri.Should().Be(
+            $"https://babelnet.io/v6/getSenses?lemma={lemma}&searchLang={searchLang}&key={_apiKey}");
+
+        Assert.IsNotNull(res);
+    }
 }

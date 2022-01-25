@@ -218,25 +218,25 @@ namespace BabelNet.HttpApi
             }
         }
     
-        /// <param name="id">The id of the Synset you want to retrieve or the page title you want to search for</param>
+        /// <param name="id">The id of the Synset you want to retrieve</param>
         /// <param name="targetLang">The languages in which the data are to be retrieved.
         /// 
         /// Default value is the English and accepts not more than 3 languages except the default language.</param>
-        /// <returns>Senses for the given word</returns>
+        /// <returns>The Synset with the given id</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Sense>> GetSynsetAsync(string id, System.Collections.Generic.IEnumerable<string> targetLang)
+        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Synset>> GetSynsetAsync(string id, System.Collections.Generic.IEnumerable<string> targetLang)
         {
             return GetSynsetAsync(id, targetLang, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <param name="id">The id of the Synset you want to retrieve or the page title you want to search for</param>
+        /// <param name="id">The id of the Synset you want to retrieve</param>
         /// <param name="targetLang">The languages in which the data are to be retrieved.
         /// 
         /// Default value is the English and accepts not more than 3 languages except the default language.</param>
-        /// <returns>Senses for the given word</returns>
+        /// <returns>The Synset with the given id</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Sense>> GetSynsetAsync(string id, System.Collections.Generic.IEnumerable<string> targetLang, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Synset>> GetSynsetAsync(string id, System.Collections.Generic.IEnumerable<string> targetLang, System.Threading.CancellationToken cancellationToken)
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -278,7 +278,7 @@ namespace BabelNet.HttpApi
                         var status_ = ((int)response_.StatusCode).ToString();
                         if (status_ == "200") 
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<Sense>>(response_, headers_).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<Synset>>(response_, headers_).ConfigureAwait(false);
                             return objectResponse_.Object;
                         }
                         else
@@ -294,7 +294,7 @@ namespace BabelNet.HttpApi
                             throw new ApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
             
-                        return default(System.Collections.Generic.ICollection<Sense>);
+                        return default(System.Collections.Generic.ICollection<Synset>);
                     }
                     finally
                     {
@@ -823,9 +823,33 @@ namespace BabelNet.HttpApi
     
     }
     
-    /// <summary>A sense in BabelNet, contained in a Synset.</summary>
+    /// <summary>A generic Sense objects</summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class Sense 
+    {
+        /// <summary>The subtype of the sense (e.g. BabelSense, WordNetSense)</summary>
+        [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
+        public SenseType Type { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("properties", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public BabelSense Properties { get; set; }
+    
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+    
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+    
+    
+    }
+    
+    /// <summary>A sense in BabelNet, contained in a Synset.</summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class BabelSense 
     {
         /// <summary>The full lemma for this sense</summary>
         [Newtonsoft.Json.JsonProperty("fullLemma", Required = Newtonsoft.Json.Required.Always)]
@@ -867,7 +891,7 @@ namespace BabelNet.HttpApi
         public Pronunciations Pronunciations { get; set; }
     
         [Newtonsoft.Json.JsonProperty("synsetID", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public Synset SynsetID { get; set; }
+        public SynsetId SynsetID { get; set; }
     
         /// <summary>Returns true if it is a key sense</summary>
         [Newtonsoft.Json.JsonProperty("bKeySense", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
@@ -1348,6 +1372,17 @@ namespace BabelNet.HttpApi
     
         [System.Runtime.Serialization.EnumMember(Value = @"OTHER")]
         OTHER = 4,
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v11.0.0.0)")]
+    public enum SenseType
+    {
+        [System.Runtime.Serialization.EnumMember(Value = @"BabelSense")]
+        BabelSense = 0,
+    
+        [System.Runtime.Serialization.EnumMember(Value = @"WordNetSense")]
+        WordNetSense = 1,
     
     }
     

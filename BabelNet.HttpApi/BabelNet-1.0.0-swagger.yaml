@@ -78,7 +78,7 @@ paths:
       parameters:
         - name: id
           in: query
-          description: The id of the Synset you want to retrieve or the page title you want to search for
+          description: The id of the Synset you want to retrieve
           required: true
           schema:
             type: string
@@ -86,13 +86,13 @@ paths:
         - $ref: '#/components/parameters/targetLang_EN'
       responses:
         '200':
-          description: Senses for the given word
+          description: The Synset with the given id
           content:
             application/json;charset=UTF8:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Sense'
+                  $ref: '#/components/schemas/Synset'
         '400':
           $ref: '#/components/responses/WrongParameters'
   /getSenses:
@@ -114,6 +114,7 @@ paths:
             application/json;charset=UTF8:
               schema:
                 type: array
+                description: A list of senses
                 items:
                   $ref: '#/components/schemas/Sense'
         '400':
@@ -393,6 +394,18 @@ components:
           example: false
           description: true if the relation is obtained from an automatic resource
     Sense:
+      description: A generic Sense objects
+      type: object
+      properties:
+          type:
+            type: string
+            description: The subtype of the sense (e.g. BabelSense, WordNetSense)
+            enum:
+              - BabelSense
+              - WordNetSense
+          properties:
+            $ref: '#/components/schemas/BabelSense'
+    BabelSense:
       description: A sense in BabelNet, contained in a Synset.
       type: object
       properties:
@@ -437,7 +450,7 @@ components:
               items:
                 type: string
         synsetID:
-          $ref: '#/components/schemas/Synset'
+          $ref: '#/components/schemas/SynsetId'
         bKeySense:
           title: Key sense
           type: boolean

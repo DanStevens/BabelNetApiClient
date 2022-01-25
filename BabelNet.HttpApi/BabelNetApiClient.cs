@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -16,7 +17,6 @@ namespace BabelNet.HttpApi
         {
             _apiKey = apiKey;
         }
-
 
         partial void PrepareRequest(HttpClient client, HttpRequestMessage request, string url)
         {
@@ -73,6 +73,16 @@ namespace BabelNet.HttpApi
                 new[] { targetLang },
                 pos,
                 source);
+        }
+
+        public Task<ICollection<Sense>> GetSensesAsync(string lemma, string searchLang)
+        {
+            return GetSensesAsync(
+                lemma,
+                searchLang,
+                null,
+                null,
+                null);
         }
 
         protected virtual void OnRequesting(HttpClient client, HttpRequestMessage request, string url)
