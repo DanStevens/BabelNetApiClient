@@ -16,5 +16,6 @@
         SynsetId SynsetID { get; set; }
         object Tags { get; set; }
         string TranslationInfo { get; set; }
+        SenseType Type { get; }
     }
 }

@@ -8,5 +8,6 @@ namespace BabelNet.HttpApi
 {
     public partial class BabelSense : ISense
     {
+        protected override SenseType GetSenseType() => SenseType.BabelSense;
     }
 }

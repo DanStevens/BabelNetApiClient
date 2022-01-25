@@ -11,7 +11,10 @@ namespace BabelNet.HttpApi
     [JsonConverter(typeof(JsonSubtypes))]
     [JsonSubtypes.FallBackSubType(typeof(BabelSense))]
     [JsonSubtypes.KnownSubTypeWithProperty(typeof(WordNetSense), nameof(WordNetSense.WordNetSenseNumber))]
-    public partial class SenseCore : ISense
+    public abstract partial class SenseCore : ISense
     {
+        SenseType ISense.Type => GetSenseType();
+
+        protected abstract SenseType GetSenseType();
     }
 }

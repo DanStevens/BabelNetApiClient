@@ -22,5 +22,8 @@ namespace BabelNet.HttpApi
         public new SynsetId SynsetID { get => Properties.SynsetID; set => Properties.SynsetID = value; }
         public new object Tags { get => Properties.Tags; set => Properties.Tags = value; }
         public new string TranslationInfo { get => Properties.TranslationInfo; set => Properties.TranslationInfo = value; }
+
+        protected override SenseType GetSenseType() => Type;
+
     }
 }

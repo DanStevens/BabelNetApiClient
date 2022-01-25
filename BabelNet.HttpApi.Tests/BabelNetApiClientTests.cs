@@ -165,5 +165,19 @@ public class BabelNetApiClientTests
 
         res.Should().NotBeNull();
         res.First().IdSense.Should().NotBe(0);
+
+        var babelSense = res.Cast<Sense>().FirstOrDefault(s => s.Type == SenseType.BabelSense);
+        if (babelSense != null)
+        {
+            babelSense.Properties.Should().BeOfType<BabelSense>();
+            babelSense.As<ISense>().Type.Should().Be(SenseType.BabelSense);
+        }
+
+        var wordNetSense = res.Cast<Sense>().FirstOrDefault(s => s.Type == SenseType.WordNetSense);
+        if (wordNetSense != null)
+        {
+            wordNetSense.Properties.Should().BeOfType<WordNetSense>();
+            wordNetSense.As<ISense>().Type.Should().Be(SenseType.WordNetSense);
+        }
     }
 }

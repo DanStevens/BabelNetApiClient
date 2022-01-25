@@ -406,9 +406,7 @@ components:
             - BabelSense
             - WordNetSense
         properties:
-          oneOf:
-            - $ref: '#/components/schemas/BabelSense'
-            - $ref: '#/components/schemas/WordNetSense'
+          $ref: '#/components/schemas/SenseCore'
     SenseCore:
       description: The core properties of a Sense, common to all subtypes
       type: object

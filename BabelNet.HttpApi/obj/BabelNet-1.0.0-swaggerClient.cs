@@ -833,7 +833,7 @@ namespace BabelNet.HttpApi
         public SenseType Type { get; set; }
     
         [Newtonsoft.Json.JsonProperty("properties", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public BabelSense Properties { get; set; }
+        public SenseCore Properties { get; set; }
     
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
     
@@ -924,8 +924,6 @@ namespace BabelNet.HttpApi
             get { return _additionalProperties; }
             set { _additionalProperties = value; }
         }
-    
-    
     }
     
     /// <summary>A subtype of SenseCore for senses in WordNet</summary>
