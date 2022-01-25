@@ -53,14 +53,23 @@ namespace BabelNet.HttpApi
             OnResponse(client, response);
         }
 
-        public Task<ICollection<SynsetId>> GetSynsetIdsAsync(string lemma, string searchLang)
+        protected virtual void OnRequesting(HttpClient client, HttpRequestMessage request, string url)
+        { }
+
+        protected virtual void OnResponse(HttpClient client, HttpResponseMessage response)
+        { }
+
+        #region GetSynsetIdAsync overloads
+
+        public Task<ICollection<SynsetId>> GetSynsetIdsAsync(string lemma, string searchLang, CancellationToken cancellationToken = default)
         {
             return GetSynsetIdsAsync(
                 lemma,
                 new[] { searchLang },
                 null,
                 null,
-                null);
+                null,
+                cancellationToken);
         }
 
         public Task<ICollection<SynsetId>> GetSynsetIdsAsync(string lemma, IEnumerable<string> searchLangs)
@@ -78,19 +87,28 @@ namespace BabelNet.HttpApi
             string searchLang,
             string targetLang,
             UniversalPOS? pos = null,
-            string? source = null)
+            string? source = null,
+            CancellationToken cancellationToken = default)
         {
             return GetSynsetIdsAsync(
                 lemma,
                 new[] { searchLang },
                 new[] { targetLang },
                 pos,
-                source);
+                source,
+                cancellationToken);
         }
 
-        public async Task<ICollection<ISense>> GetSensesAsync(string lemma, string searchLang)
+        #endregion
+
+        #region GetSensesAsync overloads
+
+        public async Task<ICollection<ISense>> GetSensesAsync(
+            string lemma,
+            string searchLang,
+            CancellationToken cancellationToken = default)
         {
-            return (await GetSensesAsync(lemma, searchLang, Enumerable.Empty<string>(), null, null)).Cast<ISense>().ToList();
+            return (await GetSensesAsync(lemma, searchLang, Enumerable.Empty<string>(), null, null, cancellationToken)).Cast<ISense>().ToList();
         }
 
         public async Task<ICollection<ISense>> GetSensesAsync(
@@ -98,21 +116,18 @@ namespace BabelNet.HttpApi
             string searchLang,
             string targetLang,
             UniversalPOS? pos = null,
-            string? source = null)
+            string? source = null,
+            CancellationToken cancellationToken = default)
         {
             return (await GetSensesAsync(
                 lemma,
                 searchLang,
                 new[] { targetLang },
                 pos,
-                source)).Cast<ISense>().ToList();
+                source,
+                cancellationToken)).Cast<ISense>().ToList();
         }
 
-        protected virtual void OnRequesting(HttpClient client, HttpRequestMessage request, string url)
-        { }
-
-        protected virtual void OnResponse(HttpClient client, HttpResponseMessage response)
-        { }
 
         async Task<ICollection<ISense>> IBabelNetApiClient.GetSensesAsync(string lemma, string searchLang, IEnumerable<string> targetLang, UniversalPOS? pos, string source)
         {
@@ -124,5 +139,7 @@ namespace BabelNet.HttpApi
             return (await GetSensesAsync(lemma, searchLang, targetLang, pos, source, cancellationToken)).Cast<ISense>().ToList();
 
         }
+
+        #endregion
     }
 }

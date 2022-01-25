@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using System.Linq;
+using System.Threading;
 
 namespace BabelNet.HttpApi.Tests;
 
@@ -197,5 +198,19 @@ public class BabelNetApiClientTests
             $"https://babelnet.io/v6/getSenses?lemma={lemma}&searchLang={searchLang}&targetLang={targetLang}&pos={pos}&source={source}&key={_apiKey}");
 
         Assert.IsNotNull(res);
+    }
+
+    [Test]
+    public void GetSenses_TestCancellation()
+    {
+        var cancellationSource = new CancellationTokenSource();
+        
+        const string lemma = "apple";
+        const string searchLang = "EN";
+        var task = _apiClient.GetSensesAsync(lemma, searchLang, cancellationSource.Token);
+
+        cancellationSource.CancelAfter(10);
+
+        Assert.ThrowsAsync<TaskCanceledException>(async () => await task);
     }
 }
