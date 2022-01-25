@@ -916,6 +916,34 @@ namespace BabelNet.HttpApi
     
     }
     
+    /// <summary>A sense in WordNet</summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class WordNetSense : BabelSense
+    {
+        /// <summary>The sense number in WordNet</summary>
+        [Newtonsoft.Json.JsonProperty("wordNetSenseNumber", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double WordNetSenseNumber { get; set; }
+    
+        /// <summary>The offset of the Sense in WordNet</summary>
+        [Newtonsoft.Json.JsonProperty("wordNetOffset", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string WordNetOffset { get; set; }
+    
+        /// <summary>The synset position of the Sense in WordNet</summary>
+        [Newtonsoft.Json.JsonProperty("wordNetSynsetPosition", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public double WordNetSynsetPosition { get; set; }
+    
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+    
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+    
+    
+    }
+    
     /// <summary>A set of one or more synonyms</summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class Synset 

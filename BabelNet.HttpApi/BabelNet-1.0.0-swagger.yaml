@@ -397,14 +397,16 @@ components:
       description: A generic Sense objects
       type: object
       properties:
-          type:
-            type: string
-            description: The subtype of the sense (e.g. BabelSense, WordNetSense)
-            enum:
-              - BabelSense
-              - WordNetSense
-          properties:
-            $ref: '#/components/schemas/BabelSense'
+        type:
+          type: string
+          description: The subtype of the sense (e.g. BabelSense, WordNetSense)
+          enum:
+            - BabelSense
+            - WordNetSense
+        properties:
+          oneOf:
+            - $ref: '#/components/schemas/BabelSense'
+            - $ref: '#/components/schemas/WordNetSense'
     BabelSense:
       description: A sense in BabelNet, contained in a Synset.
       type: object
@@ -466,6 +468,21 @@ components:
         - simpleLemma
         - lemma
         - source
+    WordNetSense:
+      description: A sense in WordNet
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/BabelSense'
+      properties:
+        wordNetSenseNumber:
+          type: number
+          description: The sense number in WordNet
+        wordNetOffset:
+          type: string
+          description: The offset of the Sense in WordNet
+        wordNetSynsetPosition:
+          type: number
+          description: The synset position of the Sense in WordNet
     Source:
       type: string
       description: Sources for the BabelNet senses. [Allowed values](https://babelnet.org/5.0/javadoc/it/uniroma1/lcl/babelnet/data/SenseSource.html)
