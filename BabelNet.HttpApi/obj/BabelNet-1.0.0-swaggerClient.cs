@@ -823,11 +823,11 @@ namespace BabelNet.HttpApi
     
     }
     
-    /// <summary>A generic Sense objects</summary>
+    /// <summary>Combines a SenseCore subtype type descriminator</summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v11.0.0.0)")]
-    public partial class Sense 
+    public partial class Sense : SenseCore
     {
-        /// <summary>The subtype of the sense (e.g. BabelSense, WordNetSense)</summary>
+        /// <summary>Descriminates the subtype of the SenseCore (e.g. BabelSense, WordNetSense)</summary>
         [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
         public SenseType Type { get; set; }
@@ -847,26 +847,22 @@ namespace BabelNet.HttpApi
     
     }
     
-    /// <summary>A sense in BabelNet, contained in a Synset.</summary>
+    /// <summary>The core properties of a Sense, common to all subtypes</summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v11.0.0.0)")]
-    public partial class BabelSense 
+    public partial class SenseCore 
     {
         /// <summary>The full lemma for this sense</summary>
-        [Newtonsoft.Json.JsonProperty("fullLemma", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        [Newtonsoft.Json.JsonProperty("fullLemma", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string FullLemma { get; set; }
     
         /// <summary>Simplified lemma, with qualifications in paranthesis removed</summary>
-        [Newtonsoft.Json.JsonProperty("simpleLemma", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        [Newtonsoft.Json.JsonProperty("simpleLemma", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string SimpleLemma { get; set; }
     
-        [Newtonsoft.Json.JsonProperty("lemma", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required]
-        public object Lemma { get; set; } = new object();
+        [Newtonsoft.Json.JsonProperty("lemma", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public object Lemma { get; set; }
     
-        [Newtonsoft.Json.JsonProperty("source", Required = Newtonsoft.Json.Required.Always)]
-        [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
+        [Newtonsoft.Json.JsonProperty("source", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Source { get; set; }
     
         /// <summary>the sensekey of the WordNet, Omega, Wikidata or Wiktionary sense to which this Sense corresponds, if any.</summary>
@@ -916,9 +912,25 @@ namespace BabelNet.HttpApi
     
     }
     
-    /// <summary>A sense in WordNet</summary>
+    /// <summary>A subtype of SenseCore for senses in BabelNet</summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v11.0.0.0)")]
-    public partial class WordNetSense : BabelSense
+    public partial class BabelSense : SenseCore
+    {
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+    
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+    
+    
+    }
+    
+    /// <summary>A subtype of SenseCore for senses in WordNet</summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class WordNetSense : SenseCore
     {
         /// <summary>The sense number in WordNet</summary>
         [Newtonsoft.Json.JsonProperty("wordNetSenseNumber", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]

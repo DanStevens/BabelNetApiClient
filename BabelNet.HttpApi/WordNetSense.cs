@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BabelNet.HttpApi
 {
-    public partial class BabelSense : ISense
+    public partial class WordNetSense : ISense
     {
     }
 }

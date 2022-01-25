@@ -2,13 +2,15 @@
 using JsonSubTypes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace BabelNet.HttpApi
 {
-    public partial class BabelNetApiClient
+    public partial class BabelNetApiClient : IBabelNetApiClient
     {
 
         private string _apiKey = null;
@@ -22,8 +24,9 @@ namespace BabelNet.HttpApi
         partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
         {
             var converter = JsonSubtypesWithPropertyConverterBuilder
-                                .Of<BabelSense>()
+                                .Of<SenseCore>()
                                 .RegisterSubtypeWithProperty<WordNetSense>(nameof(WordNetSense.WordNetSenseNumber))
+                                .SetFallbackSubtype<BabelSense>()
                                 .Build();
             settings.Converters.Add(converter);
         }
@@ -85,14 +88,9 @@ namespace BabelNet.HttpApi
                 source);
         }
 
-        public Task<ICollection<Sense>> GetSensesAsync(string lemma, string searchLang)
+        public async Task<ICollection<ISense>> GetSensesAsync(string lemma, string searchLang)
         {
-            return GetSensesAsync(
-                lemma,
-                searchLang,
-                null,
-                null,
-                null);
+            return (await GetSensesAsync(lemma, searchLang, null, null, null)).Cast<ISense>().ToList();
         }
 
         protected virtual void OnRequesting(HttpClient client, HttpRequestMessage request, string url)
@@ -100,5 +98,16 @@ namespace BabelNet.HttpApi
 
         protected virtual void OnResponse(HttpClient client, HttpResponseMessage response)
         { }
+
+        async Task<ICollection<ISense>> IBabelNetApiClient.GetSensesAsync(string lemma, string searchLang, IEnumerable<string> targetLang, UniversalPOS? pos, string source)
+        {
+            return (await GetSensesAsync(lemma, searchLang, targetLang, pos, source)).Cast<ISense>().ToList();
+        }
+
+        async Task<ICollection<ISense>> IBabelNetApiClient.GetSensesAsync(string lemma, string searchLang, IEnumerable<string> targetLang, UniversalPOS? pos, string source, CancellationToken cancellationToken)
+        {
+            return (await GetSensesAsync(lemma, searchLang, targetLang, pos, source, cancellationToken)).Cast<ISense>().ToList();
+
+        }
     }
 }

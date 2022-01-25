@@ -394,12 +394,14 @@ components:
           example: false
           description: true if the relation is obtained from an automatic resource
     Sense:
-      description: A generic Sense objects
+      description: Combines a SenseCore subtype type descriminator
       type: object
+      allOf:
+        - $ref: '#/components/schemas/SenseCore'
       properties:
         type:
           type: string
-          description: The subtype of the sense (e.g. BabelSense, WordNetSense)
+          description: Descriminates the subtype of the SenseCore (e.g. BabelSense, WordNetSense)
           enum:
             - BabelSense
             - WordNetSense
@@ -407,8 +409,8 @@ components:
           oneOf:
             - $ref: '#/components/schemas/BabelSense'
             - $ref: '#/components/schemas/WordNetSense'
-    BabelSense:
-      description: A sense in BabelNet, contained in a Synset.
+    SenseCore:
+      description: The core properties of a Sense, common to all subtypes
       type: object
       properties:
         fullLemma:
@@ -463,16 +465,16 @@ components:
           example: 102582750
         tags:
           type: object
-      required:
-        - fullLemma
-        - simpleLemma
-        - lemma
-        - source
-    WordNetSense:
-      description: A sense in WordNet
+    BabelSense:
+      description: A subtype of SenseCore for senses in BabelNet
       type: object
       allOf:
-        - $ref: '#/components/schemas/BabelSense'
+        - $ref: '#/components/schemas/SenseCore'
+    WordNetSense:
+      description: A subtype of SenseCore for senses in WordNet
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/SenseCore'
       properties:
         wordNetSenseNumber:
           type: number
