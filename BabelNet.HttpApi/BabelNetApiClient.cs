@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using JsonSubTypes;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -16,6 +17,15 @@ namespace BabelNet.HttpApi
             : this(httpClient)
         {
             _apiKey = apiKey;
+        }
+
+        partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
+        {
+            var converter = JsonSubtypesWithPropertyConverterBuilder
+                                .Of<BabelSense>()
+                                .RegisterSubtypeWithProperty<WordNetSense>(nameof(WordNetSense.WordNetSenseNumber))
+                                .Build();
+            settings.Converters.Add(converter);
         }
 
         partial void PrepareRequest(HttpClient client, HttpRequestMessage request, string url)
