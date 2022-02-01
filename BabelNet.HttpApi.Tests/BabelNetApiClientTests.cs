@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -245,5 +246,75 @@ public class BabelNetApiClientTests
         cancellationSource.CancelAfter(10);
 
         Assert.ThrowsAsync<TaskCanceledException>(async () => await task);
+    }
+
+    [Test]
+    public async Task GetOutgoingEdges()
+    {
+        var id = "bn:00007287n";
+        var res = await _apiClient.GetOutgoingEdgesAsync(id);
+
+        ApiClientRequestHistory.Count.Should().Be(1);
+        ApiClientRequestHistory[0].Method.Should().Be(HttpMethod.Get);
+        ApiClientRequestHistory[0].RequestUri.Should().Be(
+            $"https://babelnet.io/v6/getOutgoingEdges?id={Uri.EscapeDataString(id)}&key={_apiKey}");
+
+        Assert.IsNotNull(res);
+    }
+
+    [Test]
+    public async Task GetSynsetIdsFromResourceID_WithArgs_id_BabelNet_source_WIKI()
+    {
+        string id = "BabelNet";
+        string source = "WIKI";
+        string searchLang = "EN";
+        var pos = UniversalPOS.NOUN;
+
+        var res = await _apiClient.GetSynsetIdsFromResourceIDAsync(id, source, searchLang, new[] { searchLang }, pos, null);
+
+        ApiClientRequestHistory.Count.Should().Be(1);
+        ApiClientRequestHistory[0].Method.Should().Be(HttpMethod.Get);
+        ApiClientRequestHistory[0].RequestUri.Should().Be(
+            $"https://babelnet.io/v6/getSynsetIdsFromResourceID?id={Uri.EscapeDataString(id)}" +
+            $"&source={source}&searchLang={searchLang}&targetLang={searchLang}&pos={pos}" +
+            $"&key={_apiKey}");
+
+
+        Assert.IsNotNull(res);
+    }
+
+    [Test]
+    public async Task GetSynsetIdsFromResourceID_WithArgs_id_Q4837690_source_WIKIDATA_targetLang_IT()
+    {
+        string id = "Q4837690";
+        string source = "WIKIDATA";
+        string targetLang = "IT";
+
+        var res = await _apiClient.GetSynsetIdsFromResourceIDAsync(id, source, null, new[] { targetLang }, null, null);
+
+        ApiClientRequestHistory.Count.Should().Be(1);
+        ApiClientRequestHistory[0].Method.Should().Be(HttpMethod.Get);
+        ApiClientRequestHistory[0].RequestUri.Should().Be(
+            $"https://babelnet.io/v6/getSynsetIdsFromResourceID?id={Uri.EscapeDataString(id)}" +
+            $"&source={source}&targetLang={targetLang}&key={_apiKey}");
+
+        Assert.IsNotNull(res);
+    }
+    [Test]
+    public async Task GetSynsetIdsFromResourceID_WithArgs_id_wn02398357v_source_WN_wnVersion_WN21()
+    {
+        string id = "wn:02398357v";
+        string source = "WN";
+        string wnVersion = "WN_21";
+
+        var res = await _apiClient.GetSynsetIdsFromResourceIDAsync(id, source, null, null, null, wnVersion);
+
+        ApiClientRequestHistory.Count.Should().Be(1);
+        ApiClientRequestHistory[0].Method.Should().Be(HttpMethod.Get);
+        ApiClientRequestHistory[0].RequestUri.Should().Be(
+            $"https://babelnet.io/v6/getSynsetIdsFromResourceID?id={Uri.EscapeDataString(id)}" +
+            $"&source={source}&wnVersion={wnVersion}&key={_apiKey}");
+
+        Assert.IsNotNull(res);
     }
 }

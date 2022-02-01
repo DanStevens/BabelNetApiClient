@@ -143,7 +143,7 @@ paths:
           schema:
             type: string
         - $ref: '#/components/parameters/source_R'
-        - $ref: '#/components/parameters/searchLang_R'
+        - $ref: '#/components/parameters/searchLang'
         - $ref: '#/components/parameters/targetLang_SL'
         - $ref: '#/components/parameters/pos_M'
         - name: wnVersion

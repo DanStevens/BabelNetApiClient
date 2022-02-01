@@ -418,7 +418,7 @@ namespace BabelNet.HttpApi
     
         /// <param name="id">The id of the Synset you want to retrieve or the page title you want to search for</param>
         /// <param name="source">Returns only the synsets containing these sources (WIKT, WIKIDATA, etc).</param>
-        /// <param name="searchLang">the language of the word.</param>
+        /// <param name="searchLang">The language of the word.</param>
         /// <param name="targetLang">The languages in which the data are to be retrieved.
         /// 
         /// Default value is the search language and accepts not more than 3 languages except the search language.</param>
@@ -434,7 +434,7 @@ namespace BabelNet.HttpApi
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <param name="id">The id of the Synset you want to retrieve or the page title you want to search for</param>
         /// <param name="source">Returns only the synsets containing these sources (WIKT, WIKIDATA, etc).</param>
-        /// <param name="searchLang">the language of the word.</param>
+        /// <param name="searchLang">The language of the word.</param>
         /// <param name="targetLang">The languages in which the data are to be retrieved.
         /// 
         /// Default value is the search language and accepts not more than 3 languages except the search language.</param>
@@ -450,14 +450,14 @@ namespace BabelNet.HttpApi
             if (source == null)
                 throw new System.ArgumentNullException("source");
     
-            if (searchLang == null)
-                throw new System.ArgumentNullException("searchLang");
-    
             var urlBuilder_ = new System.Text.StringBuilder();
             urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/getSynsetIdsFromResourceID?");
             urlBuilder_.Append(System.Uri.EscapeDataString("id") + "=").Append(System.Uri.EscapeDataString(ConvertToString(id, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
             urlBuilder_.Append(System.Uri.EscapeDataString("source") + "=").Append(System.Uri.EscapeDataString(ConvertToString(source, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
-            urlBuilder_.Append(System.Uri.EscapeDataString("searchLang") + "=").Append(System.Uri.EscapeDataString(ConvertToString(searchLang, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            if (searchLang != null) 
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("searchLang") + "=").Append(System.Uri.EscapeDataString(ConvertToString(searchLang, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
             if (targetLang != null) 
             {
                 foreach (var item_ in targetLang) { urlBuilder_.Append(System.Uri.EscapeDataString("targetLang") + "=").Append(System.Uri.EscapeDataString(ConvertToString(item_, System.Globalization.CultureInfo.InvariantCulture))).Append("&"); }
