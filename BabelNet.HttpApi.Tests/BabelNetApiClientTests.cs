@@ -168,23 +168,26 @@ public class BabelNetApiClientTests
         res.Should().NotBeNull();
         res.First().IdSense.Should().NotBe(0);
 
-        AssertGetSensesResponseItem<Sense>(res, SenseType.BabelSense);
-        WordNetSense wordNetSense = AssertGetSensesResponseItem<WordNetSense>(res, SenseType.WordNetSense);
-        
+        var babelSenseResponseItem = AssertGetSensesResponseItem<Sense>(res, SenseType.BabelSense);
+        babelSenseResponseItem.ToSenseType<ISense>().Should().BeSameAs(babelSenseResponseItem.Properties);
+
+        var wordNetSenseResponseItem = AssertGetSensesResponseItem<WordNetSense>(res, SenseType.WordNetSense);
+        var wordNetSense = wordNetSenseResponseItem.ToSenseType<IWordNetSense>();
+        wordNetSense.Should().BeSameAs(wordNetSenseResponseItem.Properties);
         wordNetSense.WordNetSenseNumber.Should().BePositive();
         wordNetSense.WordNetSynsetPosition.Should().BePositive();
         wordNetSense.WordNetOffset.Should().NotBeNullOrEmpty();
 
         // Gets the first response item of the given `SenseType` and asserts that it is of the given TSense
         // Throws `InconclusiveExtepion` if the response doesn't contain an item of the given type
-        // Returns the TSense object that was tested
-        TSense AssertGetSensesResponseItem<TSense>(ICollection<ISense> collection, SenseType senseType) where TSense : Sense
+        // Returns the response item that was found
+        GetSensesResponseItem AssertGetSensesResponseItem<TSense>(ICollection<ISense> collection, SenseType senseType) where TSense : Sense
         {
-            var sense = collection.Cast<GetSensesResponseItem>().FirstOrDefault(s => s.Type == senseType);
-            if (sense != null)
+            var item = collection.Cast<GetSensesResponseItem>().FirstOrDefault(s => s.Type == senseType);
+            if (item != null)
             {
-                sense.Properties.Should().BeOfType<TSense>();
-                return (TSense)sense.Properties;
+                item.Properties.Should().BeOfType<TSense>();
+                return item;
             }
 
             Assert.Inconclusive($"The API did not return any {senseType} objects");

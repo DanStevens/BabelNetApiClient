@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace BabelNet.HttpApi
 {
+    [DebuggerDisplay("GetSensesResponseItem(Type = {Type}; Lemma = {SimpleLemma})")]
     public partial class GetSensesResponseItem : ISense
     {
         public bool BKeySense { get => Properties.BKeySense; set => Properties.BKeySense = value; }
@@ -22,5 +24,21 @@ namespace BabelNet.HttpApi
         public SynsetId SynsetID { get => Properties.SynsetID; set => Properties.SynsetID = value; }
         public object Tags { get => Properties.Tags; set => Properties.Tags = value; }
         public string TranslationInfo { get => Properties.TranslationInfo; set => Properties.TranslationInfo = value; }
+
+        public static explicit operator Sense(GetSensesResponseItem item) => item.Properties;
+
+        public TSense ToSenseType<TSense>() where TSense : ISense
+        {
+            try
+            {
+                return (TSense) (ISense) Properties;
+            }
+            catch (InvalidCastException ex)
+            {
+                string msg = $"Cannot convert to type {typeof(TSense)}; " +
+                             $"check {nameof(Type)} property of {typeof(GetSensesResponseItem)}";
+                throw new InvalidOperationException(msg, ex);
+            }
+        }
     }
 }
