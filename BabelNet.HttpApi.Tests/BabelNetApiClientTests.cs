@@ -181,9 +181,9 @@ public class BabelNetApiClientTests
         // Gets the first response item of the given `SenseType` and asserts that it is of the given TSense
         // Throws `InconclusiveExtepion` if the response doesn't contain an item of the given type
         // Returns the response item that was found
-        GetSensesResponseItem AssertGetSensesResponseItem<TSense>(ICollection<ISense> collection, SenseType senseType) where TSense : Sense
+        SenseResponse AssertGetSensesResponseItem<TSense>(ICollection<ISense> collection, SenseType senseType) where TSense : Sense
         {
-            var item = collection.Cast<GetSensesResponseItem>().FirstOrDefault(s => s.Type == senseType);
+            var item = collection.Cast<SenseResponse>().FirstOrDefault(s => s.Type == senseType);
             if (item != null)
             {
                 item.Properties.Should().BeOfType<TSense>();

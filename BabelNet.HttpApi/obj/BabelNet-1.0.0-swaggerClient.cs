@@ -317,7 +317,7 @@ namespace BabelNet.HttpApi
         /// <param name="source">Returns only the synsets containing these sources (WIKT, WIKIDATA, etc). Accepts multiple values.</param>
         /// <returns>Senses for the given word</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<GetSensesResponseItem>> GetSensesAsync(string lemma, string searchLang, System.Collections.Generic.IEnumerable<string> targetLang, UniversalPOS? pos, string source)
+        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<SenseResponse>> GetSensesAsync(string lemma, string searchLang, System.Collections.Generic.IEnumerable<string> targetLang, UniversalPOS? pos, string source)
         {
             return GetSensesAsync(lemma, searchLang, targetLang, pos, source, System.Threading.CancellationToken.None);
         }
@@ -332,7 +332,7 @@ namespace BabelNet.HttpApi
         /// <param name="source">Returns only the synsets containing these sources (WIKT, WIKIDATA, etc). Accepts multiple values.</param>
         /// <returns>Senses for the given word</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<GetSensesResponseItem>> GetSensesAsync(string lemma, string searchLang, System.Collections.Generic.IEnumerable<string> targetLang, UniversalPOS? pos, string source, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<SenseResponse>> GetSensesAsync(string lemma, string searchLang, System.Collections.Generic.IEnumerable<string> targetLang, UniversalPOS? pos, string source, System.Threading.CancellationToken cancellationToken)
         {
             if (lemma == null)
                 throw new System.ArgumentNullException("lemma");
@@ -386,7 +386,7 @@ namespace BabelNet.HttpApi
                         var status_ = ((int)response_.StatusCode).ToString();
                         if (status_ == "200") 
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<GetSensesResponseItem>>(response_, headers_).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<SenseResponse>>(response_, headers_).ConfigureAwait(false);
                             return objectResponse_.Object;
                         }
                         else
@@ -402,7 +402,7 @@ namespace BabelNet.HttpApi
                             throw new ApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
             
-                        return default(System.Collections.Generic.ICollection<GetSensesResponseItem>);
+                        return default(System.Collections.Generic.ICollection<SenseResponse>);
                     }
                     finally
                     {
@@ -823,9 +823,9 @@ namespace BabelNet.HttpApi
     
     }
     
-    /// <summary>Represents a single item in the collection of items returned by the GetSenses operation</summary>
+    /// <summary>Represents a single Sense item in the collection of items returned by the GetSenses operation</summary>
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v11.0.0.0)")]
-    public partial class GetSensesResponseItem 
+    public partial class SenseResponse 
     {
         [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))]
@@ -833,6 +833,25 @@ namespace BabelNet.HttpApi
     
         [Newtonsoft.Json.JsonProperty("properties", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public Sense Properties { get; set; }
+    
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+    
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+    
+    
+    }
+    
+    /// <summary>Represents a single WordNetSense item in the collection of items returned by the GetSenses operation</summary>
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class WordNetSenseResponse : SenseResponse
+    {
+        [Newtonsoft.Json.JsonProperty("properties", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public WordNetSense Properties { get; set; }
     
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
     

@@ -116,7 +116,14 @@ paths:
                 type: array
                 description: A list of senses
                 items:
-                  $ref: '#/components/schemas/GetSensesResponseItem'
+                  oneOf:
+                    - $ref: '#/components/schemas/SenseResponse'
+                    - $ref: '#/components/schemas/WordNetSenseResponse'
+                discriminator:
+                  propertyName: type
+                  mapping:
+                    BabelSense: '#/components/schemas/SenseResponse'
+                    WordNetSense: '#/components/schemas/WordNetSenseResponse'
         '400':
           $ref: '#/components/responses/WrongParameters'
   /getSynsetIdsFromResourceID:
@@ -393,14 +400,21 @@ components:
           type: boolean
           example: false
           description: true if the relation is obtained from an automatic resource
-    GetSensesResponseItem:
-      description: Represents a single item in the collection of items returned by the GetSenses operation
+    SenseResponse:
+      description: Represents a single Sense item in the collection of items returned by the GetSenses operation
       type: object
       properties:
         type:
           $ref: '#/components/schemas/SenseType'
         properties:
           $ref: '#/components/schemas/Sense'
+    WordNetSenseResponse:
+      description: Represents a single WordNetSense item in the collection of items returned by the GetSenses operation
+      allOf:
+        - $ref: '#/components/schemas/SenseResponse'
+      properties:
+        properties:
+          $ref: '#/components/schemas/WordNetSense'
     SenseType:
       type: string
       description: Descriminates the subtype of the Sense object (e.g. BabelSense, WordNetSense)
