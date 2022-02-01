@@ -365,3 +365,6 @@ FodyWeavers.xsd
 BabelNet.HttpApi/obj/*
 BabelNet.HttpApi.Tests/obj/*
 !BabelNet.HttpApi/obj/BabelNet-1.0.0-swaggerClient.cs
+
+# Attempt to prevent further commits to files containing secrets
+/BabelNet.HttpApi.Tests/Secrets.cs

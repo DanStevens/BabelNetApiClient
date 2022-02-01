@@ -155,6 +155,7 @@ public class BabelNetApiClientTests
     [Test]
     public async Task GetSenses_WithArgs_lemma_searchLang()
     {
+
         const string lemma = "apple";
         const string searchLang = "EN";
         var res = await _apiClient.GetSensesAsync(lemma, searchLang);
@@ -167,19 +168,29 @@ public class BabelNetApiClientTests
         res.Should().NotBeNull();
         res.First().IdSense.Should().NotBe(0);
 
-        var babelSense = res.Cast<Sense>().FirstOrDefault(s => s.Type == SenseType.BabelSense);
-        if (babelSense != null)
+        AssertGetSensesResponseItem<Sense>(res, SenseType.BabelSense);
+        WordNetSense wordNetSense = AssertGetSensesResponseItem<WordNetSense>(res, SenseType.WordNetSense);
+        
+        wordNetSense.WordNetSenseNumber.Should().BePositive();
+        wordNetSense.WordNetSynsetPosition.Should().BePositive();
+        wordNetSense.WordNetOffset.Should().NotBeNullOrEmpty();
+
+        // Gets the first response item of the given `SenseType` and asserts that it is of the given TSense
+        // Throws `InconclusiveExtepion` if the response doesn't contain an item of the given type
+        // Returns the TSense object that was tested
+        TSense AssertGetSensesResponseItem<TSense>(ICollection<ISense> collection, SenseType senseType) where TSense : Sense
         {
-            babelSense.Properties.Should().BeOfType<BabelSense>();
-            babelSense.As<ISense>().Type.Should().Be(SenseType.BabelSense);
+            var sense = collection.Cast<GetSensesResponseItem>().FirstOrDefault(s => s.Type == senseType);
+            if (sense != null)
+            {
+                sense.Properties.Should().BeOfType<TSense>();
+                return (TSense)sense.Properties;
+            }
+
+            Assert.Inconclusive($"The API did not return any {senseType} objects");
+            return null;
         }
 
-        var wordNetSense = res.Cast<Sense>().FirstOrDefault(s => s.Type == SenseType.WordNetSense);
-        if (wordNetSense != null)
-        {
-            wordNetSense.Properties.Should().BeOfType<WordNetSense>();
-            wordNetSense.As<ISense>().Type.Should().Be(SenseType.WordNetSense);
-        }
     }
 
     [Test]

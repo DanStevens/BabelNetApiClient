@@ -21,16 +21,6 @@ namespace BabelNet.HttpApi
             _apiKey = apiKey;
         }
 
-        partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings)
-        {
-            var converter = JsonSubtypesWithPropertyConverterBuilder
-                                .Of<SenseCore>()
-                                .RegisterSubtypeWithProperty<WordNetSense>(nameof(WordNetSense.WordNetSenseNumber))
-                                .SetFallbackSubtype<BabelSense>()
-                                .Build();
-            settings.Converters.Add(converter);
-        }
-
         partial void PrepareRequest(HttpClient client, HttpRequestMessage request, string url)
         {
             if (!string.IsNullOrWhiteSpace(_apiKey))

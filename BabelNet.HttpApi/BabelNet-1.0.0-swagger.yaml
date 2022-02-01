@@ -116,7 +116,7 @@ paths:
                 type: array
                 description: A list of senses
                 items:
-                  $ref: '#/components/schemas/Sense'
+                  $ref: '#/components/schemas/GetSensesResponseItem'
         '400':
           $ref: '#/components/responses/WrongParameters'
   /getSynsetIdsFromResourceID:
@@ -393,22 +393,22 @@ components:
           type: boolean
           example: false
           description: true if the relation is obtained from an automatic resource
-    Sense:
-      description: Combines a SenseCore subtype type descriminator
+    GetSensesResponseItem:
+      description: Represents a single item in the collection of items returned by the GetSenses operation
       type: object
-      allOf:
-        - $ref: '#/components/schemas/SenseCore'
       properties:
         type:
-          type: string
-          description: Descriminates the subtype of the SenseCore (e.g. BabelSense, WordNetSense)
-          enum:
-            - BabelSense
-            - WordNetSense
+          $ref: '#/components/schemas/SenseType'
         properties:
-          $ref: '#/components/schemas/SenseCore'
-    SenseCore:
-      description: The core properties of a Sense, common to all subtypes
+          $ref: '#/components/schemas/Sense'
+    SenseType:
+      type: string
+      description: Descriminates the subtype of the Sense object (e.g. BabelSense, WordNetSense)
+      enum:
+        - BabelSense
+        - WordNetSense
+    Sense:
+      description: Represents a single meaning of word (Synset) in BabelNet.
       type: object
       properties:
         fullLemma:
@@ -463,16 +463,11 @@ components:
           example: 102582750
         tags:
           type: object
-    BabelSense:
-      description: A subtype of SenseCore for senses in BabelNet
-      type: object
-      allOf:
-        - $ref: '#/components/schemas/SenseCore'
     WordNetSense:
-      description: A subtype of SenseCore for senses in WordNet
+      description: A subtype of Sense for senses sourced from WordNet
       type: object
       allOf:
-        - $ref: '#/components/schemas/SenseCore'
+        - $ref: '#/components/schemas/Sense'
       properties:
         wordNetSenseNumber:
           type: number
