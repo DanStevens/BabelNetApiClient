@@ -1,35 +1,55 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using JsonSubTypes;
+using Newtonsoft.Json;
 
 namespace BabelNet.HttpApi
 {
+    // Use a JsonConverter provided by JsonSubtypes, which deserializes a SenseResponse object as a
+    // WordNetSenseResponse subtype when Type is `SenseType.WordNetSense`
+    [JsonConverter(typeof(JsonSubtypes), "Type")]
+    [JsonSubtypes.KnownSubType(typeof(WordNetSenseResponse), SenseType.WordNetSense)]
     [DebuggerDisplay("SenseResponse(Type = {Type}; Lemma = {SimpleLemma})")]
     public partial class SenseResponse : ISense
     {
-        protected virtual Sense GetProperties() => Properties;
+        public SenseResponse()
+        {
+            Type = SenseType.BabelSense;
+        }
 
-        public bool BKeySense { get => GetProperties().BKeySense; set => GetProperties().BKeySense = value; }
-        public int Frequence { get => GetProperties().Frequence; set => GetProperties().Frequence = value; }
-        public string FullLemma { get => GetProperties().FullLemma; set => GetProperties().FullLemma = value; }
-        public int IdSense { get => GetProperties().IdSense; set => GetProperties().IdSense = value; }
-        public string Language { get => GetProperties().Language; set => GetProperties().Language = value; }
-        public object Lemma { get => GetProperties().Lemma; set => GetProperties().Lemma = value; }
-        public string Pos { get => GetProperties().Pos; set => GetProperties().Pos = value; }
-        public Pronunciations Pronunciations { get => GetProperties().Pronunciations; set => GetProperties().Pronunciations = value; }
-        public string SenseKey { get => GetProperties().SenseKey; set => GetProperties().SenseKey = value; }
-        public string SimpleLemma { get => GetProperties().SimpleLemma; set => GetProperties().SimpleLemma = value; }
-        public string Source { get => GetProperties().Source; set => GetProperties().Source = value; }
-        public SynsetId SynsetID { get => GetProperties().SynsetID; set => GetProperties().SynsetID = value; }
-        public object Tags { get => GetProperties().Tags; set => GetProperties().Tags = value; }
-        public string TranslationInfo { get => GetProperties().TranslationInfo; set => GetProperties().TranslationInfo = value; }
+        public SenseResponse(Sense sense) : this()
+        {
+            Properties = sense;
+        }
 
-        public static explicit operator Sense(SenseResponse item) => item.GetProperties();
+        /// <summary>
+        /// The sense object contained within the SenseResponse
+        /// </summary>
+        public virtual Sense Sense => Properties;
+
+        public bool BKeySense { get => Sense.BKeySense; set => Sense.BKeySense = value; }
+        public int Frequence { get => Sense.Frequence; set => Sense.Frequence = value; }
+        public string FullLemma { get => Sense.FullLemma; set => Sense.FullLemma = value; }
+        public int IdSense { get => Sense.IdSense; set => Sense.IdSense = value; }
+        public string Language { get => Sense.Language; set => Sense.Language = value; }
+        public object Lemma { get => Sense.Lemma; set => Sense.Lemma = value; }
+        public string Pos { get => Sense.Pos; set => Sense.Pos = value; }
+        public Pronunciations Pronunciations { get => Sense.Pronunciations; set => Sense.Pronunciations = value; }
+        public string SenseKey { get => Sense.SenseKey; set => Sense.SenseKey = value; }
+        public string SimpleLemma { get => Sense.SimpleLemma; set => Sense.SimpleLemma = value; }
+        public string Source { get => Sense.Source; set => Sense.Source = value; }
+        public SynsetId SynsetID { get => Sense.SynsetID; set => Sense.SynsetID = value; }
+        public object Tags { get => Sense.Tags; set => Sense.Tags = value; }
+        public string TranslationInfo { get => Sense.TranslationInfo; set => Sense.TranslationInfo = value; }
+
+        public static explicit operator Sense(SenseResponse item) => item.Sense;
 
         public TSense ToSenseType<TSense>() where TSense : ISense
         {
             try
             {
-                return (TSense) (ISense) GetProperties();
+                return (TSense) (ISense) Sense;
             }
             catch (InvalidCastException ex)
             {

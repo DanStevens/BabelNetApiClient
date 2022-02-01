@@ -13,11 +13,13 @@ public class WordNetSenseResponseTests
     public WordNetSenseResponseTests()
     {
         _wordNetSense = new();
-        _item = new()
-        {
-            Type = SenseType.WordNetSense,
-            Properties = _wordNetSense
-        };
+        _item = new(_wordNetSense);
+    }
+
+    [Test]
+    public void Type_ShouldBeWordNetSense()
+    {
+        _item.Type.Should().Be(SenseType.WordNetSense);
     }
 
     [Test]
@@ -38,14 +40,14 @@ public class WordNetSenseResponseTests
     public void ShouldBeCastableToSense()
     {
         var sense = (Sense)_item;
-        sense.Should().BeSameAs(_item.Properties);
+        sense.Should().BeSameAs(_item.Sense);
     }
 
     [Test]
     public void ShouldBeCastableToWordNetSense()
     {
         var sense = (WordNetSense)_item;
-        sense.Should().BeSameAs(_item.Properties);
+        sense.Should().BeSameAs(_item.Sense);
     }
 
     [Test]

@@ -169,11 +169,13 @@ public class BabelNetApiClientTests
         res.First().IdSense.Should().NotBe(0);
 
         var babelSenseResponseItem = AssertGetSensesResponseItem<Sense>(res, SenseType.BabelSense);
-        babelSenseResponseItem.ToSenseType<ISense>().Should().BeSameAs(babelSenseResponseItem.Properties);
+        babelSenseResponseItem.Should().BeOfType<SenseResponse>();
+        babelSenseResponseItem.ToSenseType<ISense>().Should().BeSameAs(babelSenseResponseItem.Sense);
 
         var wordNetSenseResponseItem = AssertGetSensesResponseItem<WordNetSense>(res, SenseType.WordNetSense);
+        wordNetSenseResponseItem.Should().BeOfType<WordNetSenseResponse>();
         var wordNetSense = wordNetSenseResponseItem.ToSenseType<IWordNetSense>();
-        wordNetSense.Should().BeSameAs(wordNetSenseResponseItem.Properties);
+        wordNetSense.Should().BeSameAs(wordNetSenseResponseItem.Sense);
         wordNetSense.WordNetSenseNumber.Should().BePositive();
         wordNetSense.WordNetSynsetPosition.Should().BePositive();
         wordNetSense.WordNetOffset.Should().NotBeNullOrEmpty();
@@ -186,7 +188,7 @@ public class BabelNetApiClientTests
             var item = collection.Cast<SenseResponse>().FirstOrDefault(s => s.Type == senseType);
             if (item != null)
             {
-                item.Properties.Should().BeOfType<TSense>();
+                item.Sense.Should().BeOfType<TSense>();
                 return item;
             }
 
@@ -212,6 +214,23 @@ public class BabelNetApiClientTests
             $"https://babelnet.io/v6/getSenses?lemma={lemma}&searchLang={searchLang}&targetLang={targetLang}&pos={pos}&source={source}&key={_apiKey}");
 
         Assert.IsNotNull(res);
+    }
+
+    [Test]
+    public async Task GetSenses_ShouldBeConvertableToIWordNetSensesCollection()
+    {
+        var res = await _apiClient.GetSensesAsync("apple", "EN", "EN", UniversalPOS.NOUN, "WN");
+        var wnSenseCount = res.Cast<SenseResponse>().Count(i => i.Type == SenseType.WordNetSense);
+
+        if (wnSenseCount > 0)
+        {
+            IWordNetSense[] wnSenses = res.OfType<IWordNetSense>().ToArray();
+            wnSenses.Length.Should().Be(wnSenseCount);
+        }
+        else
+        {
+            Assert.Inconclusive("The API did not return any WordNetSense objects");
+        }
     }
 
     [Test]

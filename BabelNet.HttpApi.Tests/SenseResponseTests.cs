@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -13,22 +15,21 @@ public class SenseResponseTests
     public SenseResponseTests()
     {
         _sense = new ();
-        _item = new()
-        {
-            Type = SenseType.BabelSense,
-            Properties = _sense
-        };
+        _item = new(_sense);
     }
 
+    [Test]
+    public void Type_ShouldBeBabelSense()
+    {
+        _item.Type.Should().Be(SenseType.BabelSense);
+    }
 
     [Test]
     public void PropertiesShouldBeDelegatedToUnderlyingSense()
     {
         _sense.Lemma.Should().BeNull();
         _item.Lemma.Should().BeNull();
-
         _sense.Lemma = new object();
-
         _item.Lemma.Should().BeSameAs(_sense.Lemma);
     }
 
@@ -36,7 +37,7 @@ public class SenseResponseTests
     public void ShouldBeCastableToSense()
     {
         var sense = (Sense)_item;
-        sense.Should().BeSameAs(_item.Properties);
+        sense.Should().BeSameAs(_item.Sense);
     }
 
     [Test]
@@ -62,7 +63,7 @@ public class SenseResponseTests
     public void ToSenseType_ShouldReturnPropertiesAsISense_WhenTSenseParamIsISense()
     {
         var sense = _item.ToSenseType<ISense>();
-        sense.Should().BeSameAs(_item.Properties);
+        sense.Should().BeSameAs(_item.Sense);
     }
 
     [Test]
@@ -71,5 +72,37 @@ public class SenseResponseTests
         var ex = Assert.Throws<InvalidOperationException>(() => _item.ToSenseType<IWordNetSense>());
         ex.Message.Should().Be($"Cannot convert to type {typeof(IWordNetSense)}; " +
                                $"check {nameof(SenseResponse.Type)} property of {typeof(SenseResponse)}");
+    }
+
+    [Test]
+    public void Cast_ShouldWork()
+    {
+        ICollection<ISense> senses = new List<SenseResponse>
+        {
+            new WordNetSenseResponse(new WordNetSense()),
+            new WordNetSenseResponse(new WordNetSense()),
+            new WordNetSenseResponse(new WordNetSense()),
+        }.Cast<ISense>().ToList();
+
+        IEnumerable<IWordNetSense> wnSenses = senses.Cast<IWordNetSense>();
+        wnSenses.Should().NotBeNull();
+        wnSenses.Count().Should().Be(senses.Count);
+    }
+
+    [Test]
+    public void OfType_ShouldWork()
+    {
+        ICollection<ISense> senses = new List<SenseResponse>
+        {
+            new WordNetSenseResponse(new WordNetSense()),
+            new WordNetSenseResponse(new WordNetSense()),
+            new WordNetSenseResponse(new WordNetSense()),
+            new SenseResponse(new Sense()),
+            new SenseResponse(new Sense())
+        }.Cast<ISense>().ToList();
+
+        IEnumerable<IWordNetSense> wnSenses = senses.OfType<IWordNetSense>();
+        wnSenses.Should().NotBeNull();
+        wnSenses.Count().Should().Be(3);
     }
 }
