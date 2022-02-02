@@ -95,7 +95,7 @@ namespace BabelNet.HttpApi
             string searchLang,
             CancellationToken cancellationToken = default)
         {
-            var res = await GetSensesAsync(lemma, searchLang, Enumerable.Empty<string>(), null, null, cancellationToken);
+            var res = await GetSensesAsync(lemma, searchLang, Enumerable.Empty<string>(), null, null, cancellationToken).ConfigureAwait(false);
             return res.Select(sr => sr.Sense).ToList();
         }
 
@@ -113,20 +113,20 @@ namespace BabelNet.HttpApi
                 new[] { targetLang },
                 pos,
                 source,
-                cancellationToken);
+                cancellationToken).ConfigureAwait(false);
             return res.Select(sr => sr.Sense).ToList();
         }
 
 
         async Task<ICollection<Sense>> IBabelNetApiClient.GetSensesAsync(string lemma, string searchLang, IEnumerable<string> targetLang, UniversalPOS? pos, string source)
         {
-            var res = await GetSensesAsync(lemma, searchLang, targetLang, pos, source);
+            var res = await GetSensesAsync(lemma, searchLang, targetLang, pos, source).ConfigureAwait(false);
             return res.Select(sr => sr.Sense).ToList();
         }
 
         async Task<ICollection<Sense>> IBabelNetApiClient.GetSensesAsync(string lemma, string searchLang, IEnumerable<string> targetLang, UniversalPOS? pos, string source, CancellationToken cancellationToken)
         {
-            var res = await GetSensesAsync(lemma, searchLang, targetLang, pos, source, cancellationToken);
+            var res = await GetSensesAsync(lemma, searchLang, targetLang, pos, source, cancellationToken).ConfigureAwait(false);
             return res.Select(sr => sr.Sense).ToList();
         }
 
