@@ -23,60 +23,18 @@ public class WordNetSenseResponseTests
     }
 
     [Test]
-    public void PropertiesShouldBeDelegatedToUnderlyingSense()
+    public void Sense_ShouldBeSet()
     {
-        _wordNetSense.Lemma.Should().BeNull();
-        _item.Lemma.Should().BeNull();
-        _wordNetSense.Lemma = new object();
-        _item.Lemma.Should().BeSameAs(_wordNetSense.Lemma);
-
-        _wordNetSense.WordNetOffset.Should().BeNull();
-        _item.WordNetOffset.Should().BeNull();
-        _wordNetSense.WordNetOffset = "ABC123";
-        _item.WordNetOffset.Should().BeSameAs(_wordNetSense.WordNetOffset);
+        _item.Sense.Should().BeSameAs(_wordNetSense);
+        _item.Sense.Should().BeSameAs(_item.Properties);
     }
 
     [Test]
-    public void ShouldBeCastableToSense()
+    public void Sense_ShouldBeTheSameAfterCastingToSenseResponse()
     {
-        var sense = (Sense)_item;
-        sense.Should().BeSameAs(_item.Sense);
-    }
-
-    [Test]
-    public void ShouldBeCastableToWordNetSense()
-    {
-        var sense = (WordNetSense)_item;
-        sense.Should().BeSameAs(_item.Sense);
-    }
-
-    [Test]
-    public void ShouldBeCastableToISense()
-    {
-        var sense = (ISense)_item;
-        sense.Should().BeSameAs(_item);
-    }
-
-    [Test]
-    public void ShouldNotBeCastableToIWordNetSense()
-    {
-        var sense = (IWordNetSense)_item;
-        sense.Should().BeSameAs(_item);
-    }
-
-    [Test]
-    public void ToSenseType_ShouldReturnPropertiesAsISense_WhenTSenseParamIsISense()
-    {
-        var sense = _item.ToSenseType<ISense>();
-        sense.Should().NotBeNull();
-        sense.Should().BeSameAs(_wordNetSense);
-    }
-
-    [Test]
-    public void ToSenseType_ShouldThrowInvalidOperation_WhenTSenseParamIsIWordNetSense()
-    {
-        var sense = _item.ToSenseType<IWordNetSense>();
-        sense.Should().NotBeNull();
-        sense.Should().BeSameAs(_wordNetSense);
+        _item.Sense.Should().BeSameAs(_wordNetSense);
+        var senseResponse = (SenseResponse)_item;
+        senseResponse.Properties.Should().BeNull();
+        senseResponse.Sense.Should().BeSameAs(_wordNetSense);
     }
 }

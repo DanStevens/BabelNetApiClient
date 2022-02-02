@@ -7,5 +7,5 @@ namespace BabelNet.HttpApi
     // subtype when it contains a property named 'workNetSenseNumber'
     [JsonConverter(typeof(JsonSubtypes))]
     [JsonSubtypes.KnownSubTypeWithProperty(typeof(WordNetSense), nameof(WordNetSense.WordNetSenseNumber))]
-    public partial class Sense : ISense {}
+    public partial class Sense {}
 }

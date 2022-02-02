@@ -8,10 +8,10 @@ namespace BabelNet.HttpApi
     {
         Task<ICollection<SynsetRelation>> GetOutgoingEdgesAsync(string id);
         Task<ICollection<SynsetRelation>> GetOutgoingEdgesAsync(string id, CancellationToken cancellationToken);
-        Task<ICollection<ISense>> GetSensesAsync(string lemma, string searchLang, CancellationToken cancellationToken = default);
-        Task<ICollection<ISense>> GetSensesAsync(string lemma, string searchLang, IEnumerable<string> targetLang, UniversalPOS? pos, string source);
-        Task<ICollection<ISense>> GetSensesAsync(string lemma, string searchLang, IEnumerable<string> targetLang, UniversalPOS? pos, string source, CancellationToken cancellationToken);
-        Task<ICollection<ISense>> GetSensesAsync(string lemma, string searchLang, string targetLang, UniversalPOS? pos = null, string? source = null, CancellationToken cancellationToken = default);
+        Task<ICollection<Sense>> GetSensesAsync(string lemma, string searchLang, CancellationToken cancellationToken = default);
+        Task<ICollection<Sense>> GetSensesAsync(string lemma, string searchLang, IEnumerable<string> targetLang, UniversalPOS? pos, string source);
+        Task<ICollection<Sense>> GetSensesAsync(string lemma, string searchLang, IEnumerable<string> targetLang, UniversalPOS? pos, string source, CancellationToken cancellationToken);
+        Task<ICollection<Sense>> GetSensesAsync(string lemma, string searchLang, string targetLang, UniversalPOS? pos = null, string? source = null, CancellationToken cancellationToken = default);
         Task<Synset> GetSynsetAsync(string id, IEnumerable<string> targetLang);
         Task<Synset> GetSynsetAsync(string id, IEnumerable<string> targetLang, CancellationToken cancellationToken);
         Task<ICollection<SynsetId>> GetSynsetIdsAsync(string lemma, IEnumerable<string> searchLangs);

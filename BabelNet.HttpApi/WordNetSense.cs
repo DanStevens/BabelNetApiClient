@@ -1,4 +1,4 @@
 ﻿namespace BabelNet.HttpApi
 {
-    public partial class WordNetSense : IWordNetSense {}
+    //public partial class WordNetSense {}
 }

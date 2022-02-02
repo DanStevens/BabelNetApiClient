@@ -170,28 +170,24 @@ public class BabelNetApiClientTests
         res.Should().NotBeNull();
         res.First().IdSense.Should().NotBe(0);
 
-        var babelSenseResponseItem = AssertGetSensesResponseItem<Sense>(res, SenseType.BabelSense);
-        babelSenseResponseItem.Should().BeOfType<SenseResponse>();
-        babelSenseResponseItem.ToSenseType<ISense>().Should().BeSameAs(babelSenseResponseItem.Sense);
+        var babelSense = AssertGetSensesResponseItem<Sense>(res, SenseType.BabelSense);
+        babelSense.SimpleLemma.Should().Be(lemma);
+        babelSense.Language.Should().Be(searchLang);    
 
-        var wordNetSenseResponseItem = AssertGetSensesResponseItem<WordNetSense>(res, SenseType.WordNetSense);
-        wordNetSenseResponseItem.Should().BeOfType<WordNetSenseResponse>();
-        var wordNetSense = wordNetSenseResponseItem.ToSenseType<IWordNetSense>();
-        wordNetSense.Should().BeSameAs(wordNetSenseResponseItem.Sense);
+        var wordNetSense = AssertGetSensesResponseItem<WordNetSense>(res, SenseType.WordNetSense);
         wordNetSense.WordNetSenseNumber.Should().BePositive();
         wordNetSense.WordNetSynsetPosition.Should().BePositive();
         wordNetSense.WordNetOffset.Should().NotBeNullOrEmpty();
 
         // Gets the first response item of the given `SenseType` and asserts that it is of the given TSense
-        // Throws `InconclusiveExtepion` if the response doesn't contain an item of the given type
+        // Throws `InconclusiveException` if the response doesn't contain an item of the given type
         // Returns the response item that was found
-        SenseResponse AssertGetSensesResponseItem<TSense>(ICollection<ISense> collection, SenseType senseType) where TSense : Sense
+        TSense AssertGetSensesResponseItem<TSense>(ICollection<Sense> collection, SenseType senseType) where TSense : Sense
         {
-            var item = collection.Cast<SenseResponse>().FirstOrDefault(s => s.Type == senseType);
+            var item = collection.FirstOrDefault(s => s is TSense);
             if (item != null)
             {
-                item.Sense.Should().BeOfType<TSense>();
-                return item;
+                return (TSense)item;
             }
 
             Assert.Inconclusive($"The API did not return any {senseType} objects");
@@ -219,15 +215,14 @@ public class BabelNetApiClientTests
     }
 
     [Test]
-    public async Task GetSenses_ShouldBeConvertableToIWordNetSensesCollection()
+    public async Task GetSenses_ShouldBeConvertableToWordNetSensesCollection()
     {
         var res = await _apiClient.GetSensesAsync("apple", "EN", "EN", UniversalPOS.NOUN, "WN");
-        var wnSenseCount = res.Cast<SenseResponse>().Count(i => i.Type == SenseType.WordNetSense);
 
-        if (wnSenseCount > 0)
+        if (res.Count > 0)
         {
-            IWordNetSense[] wnSenses = res.OfType<IWordNetSense>().ToArray();
-            wnSenses.Length.Should().Be(wnSenseCount);
+            WordNetSense[] wnSenses = res.OfType<WordNetSense>().ToArray();
+            wnSenses.Length.Should().Be(res.Count);
         }
         else
         {
