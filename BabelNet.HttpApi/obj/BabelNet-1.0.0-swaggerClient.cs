@@ -976,7 +976,7 @@ namespace BabelNet.HttpApi
     {
         /// <summary>Sense objects associated with the Synset</summary>
         [Newtonsoft.Json.JsonProperty("senses", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<Sense> Senses { get; set; }
+        public System.Collections.Generic.ICollection<SenseResponse> Senses { get; set; }
     
         /// <summary>WordNet offsets corresponding to this Synset</summary>
         [Newtonsoft.Json.JsonProperty("wnOffsets", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]

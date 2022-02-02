@@ -8,7 +8,7 @@ namespace BabelNet.HttpApi
 {
     // Use a JsonConverter provided by JsonSubtypes, which deserializes a SenseResponse object as a
     // WordNetSenseResponse subtype when Type is `SenseType.WordNetSense`
-    [JsonConverter(typeof(JsonSubtypes), "Type")]
+    [JsonConverter(typeof(JsonSubtypes), nameof(Type))]
     [JsonSubtypes.KnownSubType(typeof(WordNetSenseResponse), SenseType.WordNetSense)]
     [DebuggerDisplay("SenseResponse(Type = {Type}; Lemma = {Sense.SimpleLemma})")]
     public partial class SenseResponse

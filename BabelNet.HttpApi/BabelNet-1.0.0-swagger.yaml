@@ -510,7 +510,7 @@ components:
           type: array
           description: Sense objects associated with the Synset
           items:
-            $ref: '#/components/schemas/Sense'
+            $ref: '#/components/schemas/SenseResponse'
         wnOffsets:
           type: array
           description: WordNet offsets corresponding to this Synset
