@@ -152,6 +152,8 @@ public class BabelNetApiClientTests
             $"https://babelnet.io/v6/getSynset?id={Uri.EscapeDataString(id)}&targetLang={targetLang}&key={_apiKey}");
 
         synset.Should().NotBeNull();
+
+        ICollection<Sense> senses = synset.Senses;
     }
 
     [Test]

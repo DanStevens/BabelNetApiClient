@@ -130,6 +130,11 @@ namespace BabelNet.HttpApi
             return res.Select(sr => sr.Sense).ToList();
         }
 
+        async Task<ISynset> IBabelNetApiClient.GetSynsetAsync(string id, IEnumerable<string> targetLang, CancellationToken cancellationToken)
+        {
+            return await GetSynsetAsync(id, targetLang, cancellationToken).ConfigureAwait(false);
+        }
+
         #endregion
     }
 }

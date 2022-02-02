@@ -12,8 +12,7 @@ namespace BabelNet.HttpApi
         Task<ICollection<Sense>> GetSensesAsync(string lemma, string searchLang, IEnumerable<string> targetLang, UniversalPOS? pos, string source);
         Task<ICollection<Sense>> GetSensesAsync(string lemma, string searchLang, IEnumerable<string> targetLang, UniversalPOS? pos, string source, CancellationToken cancellationToken);
         Task<ICollection<Sense>> GetSensesAsync(string lemma, string searchLang, string targetLang, UniversalPOS? pos = null, string? source = null, CancellationToken cancellationToken = default);
-        Task<Synset> GetSynsetAsync(string id, IEnumerable<string> targetLang);
-        Task<Synset> GetSynsetAsync(string id, IEnumerable<string> targetLang, CancellationToken cancellationToken);
+        Task<ISynset> GetSynsetAsync(string id, IEnumerable<string> targetLang, CancellationToken cancellationToken = default);
         Task<ICollection<SynsetId>> GetSynsetIdsAsync(string lemma, IEnumerable<string> searchLangs);
         Task<ICollection<SynsetId>> GetSynsetIdsAsync(string lemma, IEnumerable<string> searchLang, IEnumerable<string> targetLang, UniversalPOS? pos, string source);
         Task<ICollection<SynsetId>> GetSynsetIdsAsync(string lemma, IEnumerable<string> searchLang, IEnumerable<string> targetLang, UniversalPOS? pos, string source, CancellationToken cancellationToken);
