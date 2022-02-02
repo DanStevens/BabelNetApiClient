@@ -90,11 +90,17 @@ paths:
           content:
             application/json;charset=UTF8:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Synset'
+                $ref: '#/components/schemas/Synset'
         '400':
-          $ref: '#/components/responses/WrongParameters'
+          description: The Synset with the specified ID cannot be found.
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: BabelSynset not found.
   /getSenses:
     get:
       operationId: getSenses

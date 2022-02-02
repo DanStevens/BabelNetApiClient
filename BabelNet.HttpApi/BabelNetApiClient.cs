@@ -23,7 +23,7 @@ namespace BabelNet.HttpApi
             if (!string.IsNullOrWhiteSpace(_apiKey))
             {
                 // Append `key` query parameter to each request with _apiKey
-                url = url + GetKeyQueryParameter(new Uri(url));
+                url += GetKeyQueryParameter(new Uri(url));
                 request.RequestUri = new Uri(url);
             }
 

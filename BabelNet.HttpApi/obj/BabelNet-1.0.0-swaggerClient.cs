@@ -224,7 +224,7 @@ namespace BabelNet.HttpApi
         /// Default value is the English and accepts not more than 3 languages except the default language.</param>
         /// <returns>The Synset with the given id</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Synset>> GetSynsetAsync(string id, System.Collections.Generic.IEnumerable<string> targetLang)
+        public System.Threading.Tasks.Task<Synset> GetSynsetAsync(string id, System.Collections.Generic.IEnumerable<string> targetLang)
         {
             return GetSynsetAsync(id, targetLang, System.Threading.CancellationToken.None);
         }
@@ -236,7 +236,7 @@ namespace BabelNet.HttpApi
         /// Default value is the English and accepts not more than 3 languages except the default language.</param>
         /// <returns>The Synset with the given id</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Synset>> GetSynsetAsync(string id, System.Collections.Generic.IEnumerable<string> targetLang, System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<Synset> GetSynsetAsync(string id, System.Collections.Generic.IEnumerable<string> targetLang, System.Threading.CancellationToken cancellationToken)
         {
             if (id == null)
                 throw new System.ArgumentNullException("id");
@@ -278,14 +278,14 @@ namespace BabelNet.HttpApi
                         var status_ = ((int)response_.StatusCode).ToString();
                         if (status_ == "200") 
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<Synset>>(response_, headers_).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<Synset>(response_, headers_).ConfigureAwait(false);
                             return objectResponse_.Object;
                         }
                         else
                         if (status_ == "400") 
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<Response2>(response_, headers_).ConfigureAwait(false);
-                            throw new ApiException<Response2>("There is an error with one or more parameters in the request", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
+                            var objectResponse_ = await ReadObjectResponseAsync<Response3>(response_, headers_).ConfigureAwait(false);
+                            throw new ApiException<Response3>("The Synset with the specified ID cannot be found.", (int)response_.StatusCode, objectResponse_.Text, headers_, objectResponse_.Object, null);
                         }
                         else
                         if (status_ != "200" && status_ != "204")
@@ -294,7 +294,7 @@ namespace BabelNet.HttpApi
                             throw new ApiException("The HTTP status code of the response was not expected (" + (int)response_.StatusCode + ").", (int)response_.StatusCode, responseData_, headers_, null);
                         }
             
-                        return default(System.Collections.Generic.ICollection<Synset>);
+                        return default(Synset);
                     }
                     finally
                     {
@@ -1393,6 +1393,24 @@ namespace BabelNet.HttpApi
     
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v11.0.0.0)")]
     public partial class Response2 
+    {
+        [Newtonsoft.Json.JsonProperty("message", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string Message { get; set; }
+    
+        private System.Collections.Generic.IDictionary<string, object> _additionalProperties = new System.Collections.Generic.Dictionary<string, object>();
+    
+        [Newtonsoft.Json.JsonExtensionData]
+        public System.Collections.Generic.IDictionary<string, object> AdditionalProperties
+        {
+            get { return _additionalProperties; }
+            set { _additionalProperties = value; }
+        }
+    
+    
+    }
+    
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.0.22.0 (Newtonsoft.Json v11.0.0.0)")]
+    public partial class Response3 
     {
         [Newtonsoft.Json.JsonProperty("message", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Message { get; set; }

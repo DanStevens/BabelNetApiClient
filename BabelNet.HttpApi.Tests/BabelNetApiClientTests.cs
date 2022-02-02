@@ -139,18 +139,19 @@ public class BabelNetApiClientTests
             $"https://babelnet.io/v6/getSynsetIds?lemma={lemma}&key={_apiKey}");
     }
 
-    [Ignore("TODO: Come back to this")]
     [Test]
     public async Task GetSynset()
     {
         const string id = "bn:14792761n";
         const string targetLang = "EN";
-        var res = await _apiClient.GetSynsetAsync(id, new string[] { targetLang });
+        var synset = await _apiClient.GetSynsetAsync(id, new string[] { targetLang });
 
         ApiClientRequestHistory.Count.Should().Be(1);
         ApiClientRequestHistory[0].Method.Should().Be(HttpMethod.Get);
         ApiClientRequestHistory[0].RequestUri.Should().Be(
-            $"https://babelnet.io/v6/getSynset?id={id}&targetLang={targetLang}&key={_apiKey}");
+            $"https://babelnet.io/v6/getSynset?id={Uri.EscapeDataString(id)}&targetLang={targetLang}&key={_apiKey}");
+
+        synset.Should().NotBeNull();
     }
 
     [Test]
