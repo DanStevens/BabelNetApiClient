@@ -28,11 +28,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  version:
-                    type: string
-                    example: V5_0
+                $ref: '#/components/schemas/VersionResponse'
   /getSynsetIds:
     get:
       operationId: getSynsetIds
@@ -96,11 +92,7 @@ paths:
           content:
             application/json;charset=UTF-8:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: BabelSynset not found.
+                $ref: '#/components/schemas/MessageResponse'
   /getSenses:
     get:
       operationId: getSenses
@@ -289,11 +281,7 @@ components:
       content:
         application/json;charset=UTF-8:
           schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: Wrong Parameters.
+            $ref: '#/components/schemas/MessageResponse'
     SynsetArray:
       description: An array of Synset objects
       content:
@@ -707,6 +695,22 @@ components:
           type: string
           description: The language of the Wikipedia category
           example: EN
+    MessageResponse:
+      type: object
+      description: A response consisting of a message
+      properties:
+        message:
+          type: string
+          description: The message text
+          example: The maximum keys number per IP has been reached.
+    VersionResponse:
+      type: object
+      description: Response to /getVerion operation
+      properties:
+        version:
+          type: string
+          description: The version number of the BabelNet HTTP API
+          example: V5_0
   securitySchemes:
     key:
       type: apiKey

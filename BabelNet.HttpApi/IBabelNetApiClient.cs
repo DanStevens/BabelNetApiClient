@@ -20,7 +20,7 @@ namespace BabelNet.HttpApi
         Task<ICollection<SynsetId>> GetSynsetIdsAsync(string lemma, string searchLang, string targetLang, UniversalPOS? pos = null, string? source = null, CancellationToken cancellationToken = default);
         Task<ICollection<Synset>> GetSynsetIdsFromResourceIDAsync(string id, string source, string searchLang, IEnumerable<string> targetLang, UniversalPOS? pos, string wnVersion);
         Task<ICollection<Synset>> GetSynsetIdsFromResourceIDAsync(string id, string source, string searchLang, IEnumerable<string> targetLang, UniversalPOS? pos, string wnVersion, CancellationToken cancellationToken);
-        Task<Response> GetVersionAsync();
-        Task<Response> GetVersionAsync(CancellationToken cancellationToken);
+        Task<VersionResponse> GetVersionAsync();
+        Task<VersionResponse> GetVersionAsync(CancellationToken cancellationToken);
     }
 }

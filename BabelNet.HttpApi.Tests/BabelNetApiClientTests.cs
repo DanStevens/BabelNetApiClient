@@ -130,7 +130,7 @@ public class BabelNetApiClientTests
         const string lemma = "apple";
 
         // Empty searchLang will result in error from API
-        Assert.ThrowsAsync<ApiException<Response2>>(async () => 
+        Assert.ThrowsAsync<ApiException<MessageResponse>>(async () => 
             await _apiClient.GetSynsetIdsAsync(lemma, Enumerable.Empty<string>(), Enumerable.Empty<string>(), null, null));
 
         ApiClientRequestHistory.Count.Should().Be(1);
