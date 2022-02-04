@@ -65,6 +65,8 @@ paths:
                   source: BABELNET
         '400':
           $ref: '#/components/responses/WrongParameters'
+        '403':
+          $ref: '#/components/responses/ApiKeyError'
   /getSynset:
     get:
       operationId: getSynset
@@ -88,11 +90,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Synset'
         '400':
-          description: The Synset with the specified ID cannot be found.
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                $ref: '#/components/schemas/MessageResponse'
+          $ref: '#/components/responses/SynsetLookupError'
+        '403':
+          $ref: '#/components/responses/ApiKeyError'
   /getSenses:
     get:
       operationId: getSenses
@@ -124,6 +124,8 @@ paths:
                     WordNetSense: '#/components/schemas/WordNetSenseResponse'
         '400':
           $ref: '#/components/responses/WrongParameters'
+        '403':
+          $ref: '#/components/responses/ApiKeyError'
   /getSynsetIdsFromResourceID:
     get:
       operationId: getSynsetIdsFromResourceID
@@ -160,6 +162,8 @@ paths:
                   $ref: '#/components/schemas/Synset'
         '400':
           $ref: '#/components/responses/WrongParameters'
+        '403':
+          $ref: '#/components/responses/ApiKeyError'
   /getOutgoingEdges:
     get:
       operationId: getOutgoingEdges
@@ -184,7 +188,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/SynsetRelation'
         '400':
-          $ref: '#/components/responses/WrongParameters'
+          $ref: '#/components/responses/SynsetLookupError'
+        '403':
+          $ref: '#/components/responses/ApiKeyError'
 components:
   headers:
     Accept-Encoding:
@@ -277,11 +283,38 @@ components:
         $ref: '#/components/schemas/Source'
   responses:
     WrongParameters:
-      description: There is an error with one or more parameters in the request
+      description: There is a problem with the request
       content:
         application/json;charset=UTF-8:
           schema:
             $ref: '#/components/schemas/MessageResponse'
+          examples:
+            Wrong parameters:
+              $ref: '#/components/examples/Wrong parameters'
+    ApiKeyError:
+      description: There was an problem with the supplied API Key
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: '#/components/schemas/ApiKeyError'
+          examples:
+            API key issue:
+              $ref: '#/components/examples/API key issue'
+            Daily limit exceeded:
+              $ref: '#/components/examples/Daily limit exceeded'
+    SynsetLookupError:
+      description: There is a problem with the request
+      content:
+        application/json;charset=UTF-8:
+          schema:
+            $ref: '#/components/schemas/MessageResponse'
+          examples:
+            Synset not found:
+              description: A Synset with the given ID could not be found.
+              value:
+                message: BabelSynset not found.
+            Wrong parameters:
+              $ref: '#/components/examples/Wrong parameters'
     SynsetArray:
       description: An array of Synset objects
       content:
@@ -701,8 +734,20 @@ components:
       properties:
         message:
           type: string
-          description: The message text
-          example: The maximum keys number per IP has been reached.
+    ApiKeyError:
+      type: object
+      description: |
+        Indicates that there is a problem with the supplied API key: it was blank, invalid or the daily request limit has been exceed.
+      allOf:
+        - $ref: '#/components/schemas/MessageResponse'
+      example:
+        $ref: '#/components/examples/API key issue/value/message'
+    SynsetNotFound:
+      type: object
+      description: The Synset with the specified ID cannot be found
+      allOf:
+        - $ref: '#/components/schemas/MessageResponse'
+      example: BabelSynset not found.
     VersionResponse:
       type: object
       description: Response to /getVerion operation
@@ -717,3 +762,24 @@ components:
       name: key
       description: API key obtained after signing up to BabelNet (see [key & limits](https://babelnet.org/guide#HowdoIobtainaBabelNetAPIkey?)) 
       in: query
+  examples:
+    Wrong parameters:
+      description: |
+        This response may indicate a required query parameter may is missing.
+        This includes the *key* parameter, which is required for all operations.
+      value:
+        message: Wrong parameters.
+    API key issue:
+      description: |
+        This response indicates that there is a problem with the supplied API key;
+        it is either blank or invalid. [Login in to BabelNet.org](https://www.babelnet.org/login)
+        to check or request an API key.
+      value:
+        message: The maximum keys number per IP has been reached.
+    Daily limit exceeded:
+      description: |
+        This response indicates that the number of requests allowed per day has been exceeded
+        (your account has ran out of Babelcoins). [Login in to BabelNet.org](https://www.babelnet.org/login)
+        to check your Babelcoin balance.
+      value:
+        message: "Your key is not valid or the daily requests limit has been reached. Please visit http://babelnet.org."

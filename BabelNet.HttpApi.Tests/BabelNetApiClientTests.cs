@@ -140,20 +140,33 @@ public class BabelNetApiClientTests
     }
 
     [Test]
-    public async Task GetSynset()
+    public void GetSynsetIds_WithEmptyApiKey()
     {
-        const string id = "bn:14792761n";
+        _apiClient = new LoggingBabelNetApiClient(_httpClient, string.Empty);
+        var ex = Assert.ThrowsAsync<ApiException<MessageResponse>>(async () => await _apiClient.GetSynsetIdsAsync("apple", "EN"));
+        ex.Message.Should().StartWithEquivalentOf(Messages.GeneralRequestError);
+        ex.Result.Message.Should().Be(Messages.WrongParameters);
+    }
+
+    [Test]
+    public void GetSynsetIds_WithInvalidApiKey()
+    {
+        _apiClient = new LoggingBabelNetApiClient(_httpClient, "notavalidapikey");
+        var ex = Assert.ThrowsAsync<ApiException<ApiKeyError>>(async () => await _apiClient.GetSynsetIdsAsync("apple", "EN"));
+        ex.Message.Should().StartWithEquivalentOf(Messages.ApiKeyError);
+        ex.Result.Message.Should().Be(Messages.InvalidKeyError);
+    }
+
+    [Test]
+    public void GetSynset_WithNonexistentSynsetId()
+    {
+        const string id = "NotASynsetId";
         const string targetLang = "EN";
-        var synset = await _apiClient.GetSynsetAsync(id, new string[] { targetLang });
+        var ex = Assert.ThrowsAsync<ApiException<MessageResponse>>(async () =>
+            await _apiClient.GetSynsetAsync(id, new [] { targetLang }));
 
-        ApiClientRequestHistory.Count.Should().Be(1);
-        ApiClientRequestHistory[0].Method.Should().Be(HttpMethod.Get);
-        ApiClientRequestHistory[0].RequestUri.Should().Be(
-            $"https://babelnet.io/v6/getSynset?id={Uri.EscapeDataString(id)}&targetLang={targetLang}&key={_apiKey}");
-
-        synset.Should().NotBeNull();
-
-        ICollection<Sense> senses = synset.Senses;
+        ex.Message.Should().StartWithEquivalentOf(Messages.GeneralRequestError);
+        ex.Result.Message.Should().Be(Messages.SynsetNotFound);
     }
 
     [Test]
@@ -247,7 +260,7 @@ public class BabelNetApiClientTests
     }
 
     [Test]
-    public async Task GetOutgoingEdges()
+    public async Task GetOutgoingEdges_WithExistingSynsetId()
     {
         var id = "bn:00007287n";
         var res = await _apiClient.GetOutgoingEdgesAsync(id);
@@ -259,6 +272,18 @@ public class BabelNetApiClientTests
 
         Assert.IsNotNull(res);
     }
+
+    [Test]
+    public async Task GetOutgoingEdges_WithNonexistentSynsetId()
+    {
+        var id = "00000000";
+
+        var ex = Assert.ThrowsAsync<ApiException<MessageResponse>>(async () =>
+            await _apiClient.GetOutgoingEdgesAsync(id));
+        ex.Message.Should().StartWithEquivalentOf(Messages.GeneralRequestError);
+        ex.Result.Message.Should().Be(Messages.SynsetNotFound);
+    }
+
 
     [Test]
     public async Task GetSynsetIdsFromResourceID_WithArgs_id_BabelNet_source_WIKI()
